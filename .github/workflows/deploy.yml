@@ -103,6 +103,7 @@ jobs:
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             export PATH="$HOME/.local/bin:$PATH"
+            cd ~/amp-academy
             make health
 
       # ── 4. Annotate the run ───────────────────────────────────────────────────

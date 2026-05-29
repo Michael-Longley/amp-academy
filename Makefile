@@ -97,7 +97,7 @@ restart: stop start
 update:
 	@echo "→ Reinstalling plugins in running containers..."
 	@for c in $(PLUGIN_CONTAINERS); do \
-		$(TUTOR) local dc exec -T $$c pip install --force-reinstall \
+		$(TUTOR) local dc exec -T $$c pip install --force-reinstall --no-deps \
 			'$(PURCHASING_PKG)' \
 			'$(SPONSORSHIP_PKG)'; \
 	done
