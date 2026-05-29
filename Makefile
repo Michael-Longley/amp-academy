@@ -125,8 +125,9 @@ migrate:
 # Polls /heartbeat every 10 s for up to 2 minutes. Used by the deploy workflow.
 health:
 	@echo "→ Waiting for LMS to respond..."
-	@for i in $$(seq 1 12); do \
-		if $(TUTOR) local dc exec -T lms curl -sf http://localhost:8000/heartbeat > /dev/null 2>&1; then \
+	@LMS_HOST=$$($(TUTOR) config printvalue LMS_HOST 2>/dev/null || echo ""); \
+	for i in $$(seq 1 12); do \
+		if curl -sf --max-time 10 "https://$$LMS_HOST/heartbeat" > /dev/null 2>&1; then \
 			echo "✓ LMS is healthy."; \
 			exit 0; \
 		fi; \
