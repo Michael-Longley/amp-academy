@@ -4,25 +4,12 @@ from .models import CourseAccess, CoursePrice, Order, RevenueSplit, Subscription
 from . import signals as purchasing_signals
 
 
-class RevenueSplitInline(admin.TabularInline):
-    model = RevenueSplit
-    extra = 0
-    fields = ("course_id", "writer_user", "writer_share_pct", "set_by")
-    readonly_fields = ("set_by",)
-
-    def save_model(self, request, obj, form, change):
-        if not obj.set_by_id:
-            obj.set_by = request.user
-        super().save_model(request, obj, form, change)
-
-
 @admin.register(CoursePrice)
 class CoursePriceAdmin(admin.ModelAdmin):
     list_display = ("course_id", "pricing_options", "one_time_price_usd", "subscription_price_usd", "is_active")
     list_filter = ("pricing_options", "is_active")
     search_fields = ("course_id",)
     list_editable = ("is_active",)
-    inlines = [RevenueSplitInline]
 
 
 @admin.register(RevenueSplit)
