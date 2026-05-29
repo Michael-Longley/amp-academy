@@ -1,0 +1,10 @@
+// ── Amp Academy — Font Declarations ─────────────────────────────────────────
+// Rendered by Tutor Jinja2; AMP_THEME_GOOGLE_FONT_URL is substituted
+// with the configured value before SCSS compilation.
+//
+// To use a different font:
+//   tutor config save --set AMP_THEME_GOOGLE_FONT_URL="https://fonts.googleapis.com/css2?family=YourFont:wght@400;700&display=swap"
+//   tutor config save --set AMP_THEME_FONT_FAMILY="YourFont, sans-serif"
+//   tutor images build openedx && tutor local restart
+
+@import url("{{ AMP_THEME_GOOGLE_FONT_URL }}");

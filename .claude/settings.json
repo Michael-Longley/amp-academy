@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tutor config *)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec -u root tutor_local-lms-1 chown -R app:app /openedx/themes/amp-theme)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec -u root tutor_local-lms-1 chown app:app /openedx/themes/amp-theme/lms/static/sass/partials/lms/theme/_extras.scss)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec tutor_local-lms-1 ls -la /openedx/themes/amp-theme/lms/static/css/)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec tutor_local-lms-1 bash -c \"grep -c 'amp-course-card' /openedx/staticfiles/amp-theme/css/lms-main-v1.css\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec tutor_local-lms-1 bash -c \"grep -n 'amp-course-card\\\\|listing-courses.*grid\\\\|amp-dashboard' /openedx/staticfiles/amp-theme/css/lms-main-v1.css | head -20\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec tutor_local-lms-1 bash -c \"grep -o 'amp-course-card[^{]*{' /openedx/staticfiles/amp-theme/css/lms-main-v1.css | head -10\")",
+      "Bash(tutor --version)",
+      "Bash(tutor plugins *)",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; tutor config printvalue LMS_HOST; tutor config printvalue ENABLE_HTTPS 2>&1)",
+      "Read(//c/Users/IG-11/AppData/Local/tutor/tutor/env/apps/openedx/settings/lms/**)",
+      "Read(//c/Users/IG-11/AppData/Local/tutor/tutor/env\" 2>/dev/**)",
+      "Read(//c/Users/IG-11/AppData/Local/tutor/tutor/env/apps/openedx/settings/**)",
+      "Read(//c/Users/IG-11/AppData/Local/tutor/tutor/env/local/**)"
+    ]
+  }
+}

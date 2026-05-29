@@ -1,0 +1,59 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}Teachers — {{ institution.name }}{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}">{{ institution.name }}</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">Teachers</li>
+{% endblock %}
+{% block page_heading %}Teachers{% endblock %}
+
+{% block portal_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted mb-0">
+    Teachers have read-only access to their assigned students' progress.
+  </p>
+  <a href="{% url 'sponsorship:teacher_add' institution_slug=institution.slug %}" class="btn btn-primary btn-sm">
+    + Add Teacher
+  </a>
+</div>
+
+{% if teachers %}
+<div class="table-responsive">
+  <table class="table table-hover table-sm">
+    <thead class="thead-light">
+      <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Students assigned</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for teacher in teachers %}
+      <tr>
+        <td>{{ teacher.user.email }}</td>
+        <td>{{ teacher.user.get_full_name|default:"—" }}</td>
+        <td>{{ teacher.student_assignments.count }}</td>
+        <td>
+          <a href="{% url 'sponsorship:teacher_assign' institution_slug=institution.slug teacher_pk=teacher.pk %}"
+             class="btn btn-sm btn-outline-secondary">
+            Assign Students
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted mt-3">No teachers added yet.</p>
+{% endif %}
+
+<div class="mt-4">
+  <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}" class="btn btn-outline-secondary btn-sm">
+    ← Back to Students
+  </a>
+</div>
+{% endblock %}

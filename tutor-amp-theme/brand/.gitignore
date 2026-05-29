@@ -1,0 +1,5 @@
+node_modules/
+
+# Uncomment the line below if you switch to CDN hosting.
+# Keep build/ committed so GitHub raw URLs work as CSS sources in production.
+# paragon/build/

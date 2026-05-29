@@ -1,0 +1,76 @@
+{% extends "purchasing/base.html" %}
+{% load i18n %}
+
+{% block purchasing_title %}Course Store{% endblock %}
+{% block page_heading %}Course Store{% endblock %}
+
+{% block page_actions %}
+  <a href="{% url 'purchasing:cart' %}" class="btn btn-outline-primary btn-sm">
+    View Cart
+  </a>
+{% endblock %}
+
+{% block purchasing_content %}
+{% if items %}
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3">
+    {% for item in items %}
+    <div class="col mb-4">
+      <div class="card h-100" style="border-left: 4px solid var(--amp-primary, #0075b4);">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title font-weight-bold" style="color: var(--amp-primary, #0075b4);">
+            {{ item.course_name }}
+          </h5>
+
+          {# Price badges #}
+          <div class="mb-3">
+            {% if item.price.is_free %}
+              <span class="badge badge-success px-3 py-2" style="font-size: 0.9rem;">Free</span>
+            {% else %}
+              {% if item.price.offers_one_time %}
+                <span class="badge badge-primary px-3 py-2 mr-1" style="font-size: 0.9rem;">
+                  ${{ item.price.one_time_price_usd }} one-time
+                </span>
+              {% endif %}
+              {% if item.price.offers_subscription %}
+                <span class="badge badge-secondary px-3 py-2" style="font-size: 0.9rem;">
+                  ${{ item.price.subscription_price_usd }}/mo
+                </span>
+              {% endif %}
+            {% endif %}
+          </div>
+
+          <div class="mt-auto">
+            {% if item.user_has_access %}
+              <span class="btn btn-success btn-sm disabled w-100">✓ You have access</span>
+            {% elif item.price.is_free %}
+              {# Free courses — direct enrollment handled elsewhere #}
+              <span class="text-muted small">Free — enroll via the course page</span>
+            {% else %}
+              <form method="post" action="{% url 'purchasing:cart_add' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course_id" value="{{ item.price.course_id }}">
+                <div class="input-group input-group-sm">
+                  <select name="order_type" class="custom-select">
+                    {% if item.price.offers_one_time %}
+                      <option value="one_time">${{ item.price.one_time_price_usd }} — One-time</option>
+                    {% endif %}
+                    {% if item.price.offers_subscription %}
+                      <option value="subscription">${{ item.price.subscription_price_usd }}/mo — Subscribe</option>
+                    {% endif %}
+                  </select>
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </div>
+                </div>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">No courses are currently available for purchase.</p>
+{% endif %}
+{% endblock %}

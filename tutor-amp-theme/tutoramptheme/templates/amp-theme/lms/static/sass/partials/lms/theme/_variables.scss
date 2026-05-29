@@ -1,0 +1,82 @@
+// ── Amp Academy — LMS Bootstrap Variable Overrides ──────────────────────────
+// This file is rendered by Tutor's Jinja2 engine before SCSS compilation.
+// AMP_THEME_* placeholders are replaced with values from `tutor config`.
+// To change any value: tutor config save --set AMP_THEME_PRIMARY_COLOR="#hex"
+// Then rebuild: tutor images build openedx && tutor local restart
+
+// ── Brand colors ─────────────────────────────────────────────────────────────
+$primary:            {{ AMP_THEME_PRIMARY_COLOR }};
+$secondary:          {{ AMP_THEME_SECONDARY_COLOR }};
+$info:               {{ AMP_THEME_CONFIRM_COLOR }};
+$success:            #27ae60;
+$warning:            {{ AMP_THEME_PRIMARY_COLOR }};
+$danger:             {{ AMP_THEME_NOTICE_COLOR }};
+
+// ── Links ─────────────────────────────────────────────────────────────────────
+$link-color:         {{ AMP_THEME_LINK_COLOR }};
+$link-hover-color:   {{ AMP_THEME_SECONDARY_COLOR }};
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+$body-color:         {{ AMP_THEME_TEXT_COLOR }};
+$body-bg:            {{ AMP_THEME_BG_COLOR }};
+
+// ── Typography ────────────────────────────────────────────────────────────────
+$font-family-sans-serif: {{ AMP_THEME_FONT_FAMILY }};
+$font-size-base:     1rem;        // 16px
+$font-size-sm:       0.875rem;    // 14px
+$font-weight-normal: 400;
+$font-weight-bold:   600;
+$line-height-base:   1.6;
+$headings-font-weight: 700;
+$headings-color:     {{ AMP_THEME_SECONDARY_COLOR }};
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+$btn-border-radius:  4px;
+$btn-border-radius-lg: 6px;
+$btn-border-radius-sm: 3px;
+$btn-font-weight:    600;
+$btn-padding-y:      0.5rem;
+$btn-padding-x:      1.25rem;
+
+// ── Navbar ────────────────────────────────────────────────────────────────────
+$navbar-light-color:              {{ AMP_THEME_NAVBAR_TEXT }};
+$navbar-light-brand-color:        {{ AMP_THEME_NAVBAR_TEXT }};
+$navbar-light-active-color:       {{ AMP_THEME_NAVBAR_TEXT }};
+$navbar-light-hover-color:        rgba(255,255,255,0.8);
+$navbar-light-toggler-border-color: rgba(255,255,255,0.3);
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+$card-border-radius:   8px;
+$card-border-color:    #d0d7de;
+$card-cap-bg:          #f8f9fa;
+$card-box-shadow:      0 1px 4px rgba(0,0,0,0.08);
+
+// ── Borders ───────────────────────────────────────────────────────────────────
+$border-color:         #d0d7de;
+$border-radius:        6px;
+$border-radius-lg:     8px;
+$border-radius-sm:     4px;
+
+// ── Form controls ─────────────────────────────────────────────────────────────
+$input-border-color:     #d0d7de;
+$input-focus-border-color: {{ AMP_THEME_PRIMARY_COLOR }};
+$input-focus-box-shadow: 0 0 0 3px rgba(255,177,0,0.25);
+$input-border-radius:    4px;
+
+// ── Badges ────────────────────────────────────────────────────────────────────
+$badge-border-radius:  4px;
+$badge-font-weight:    600;
+
+// ── Alerts ────────────────────────────────────────────────────────────────────
+$alert-border-radius:  6px;
+
+// ── Breadcrumbs ───────────────────────────────────────────────────────────────
+$breadcrumb-bg:        transparent;
+
+// ── Spacing ───────────────────────────────────────────────────────────────────
+$spacer:               1rem;
+
+// ── Open edX-specific ─────────────────────────────────────────────────────────
+$toolbar-bg:           {{ AMP_THEME_NAVBAR_BG }};
+$course-nav-bg:        {{ AMP_THEME_NAVBAR_BG }};
+$header-bg:            {{ AMP_THEME_NAVBAR_BG }};

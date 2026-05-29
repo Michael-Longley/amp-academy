@@ -1,0 +1,39 @@
+// Amp Academy — Paragon SCSS variable overrides
+// These apply when an MFE imports this package at compile time
+// (via webpack alias '@edx/brand' → '@amp-academy/brand').
+// For runtime theming, the CSS variable files in paragon/build/ are used instead.
+
+// ── Brand colors ─────────────────────────────────────────────────────────────
+$primary:   #FFB100;   // Amber — matches AMP_THEME_PRIMARY_COLOR
+$secondary: #24292E;   // Foundation Slate — matches AMP_THEME_SECONDARY_COLOR
+$info:      #2980B9;   // Confirm Blue — matches AMP_THEME_CONFIRM_COLOR
+$warning:   #FFB100;   // Amber
+$success:   #27ae60;
+$danger:    #C0392B;   // Notice Red — matches AMP_THEME_NOTICE_COLOR
+
+// Paragon-specific brand tokens
+$brand:     #FFB100;   // Amber — matches pgn-color-brand-base in tokens
+$accent-a:  #24292E;   // Slate — matches pgn-color-accent-a-base in tokens
+$accent-b:  #F0F2F5;   // Light Grey — matches AMP_THEME_BG_COLOR
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+$body-color: #24292E;  // Slate — matches AMP_THEME_TEXT_COLOR
+$body-bg:    #F0F2F5;  // Light Grey — matches AMP_THEME_BG_COLOR
+
+// ── Typography ────────────────────────────────────────────────────────────────
+$font-family-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+$headings-font-weight:   700;
+$font-weight-bold:       600;
+$line-height-base:       1.6;
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+$btn-font-weight:    600;
+$btn-border-radius:  4px;
+
+// ── Borders ───────────────────────────────────────────────────────────────────
+$border-radius:   6px;
+$border-color:    #d0d7de;
+
+// ── Links ─────────────────────────────────────────────────────────────────────
+$link-color:       #2980B9;   // Confirm Blue — matches AMP_THEME_LINK_COLOR
+$link-hover-color: #24292E;   // Slate — matches AMP_THEME_SECONDARY_COLOR

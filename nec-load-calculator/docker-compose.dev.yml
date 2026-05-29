@@ -1,0 +1,11 @@
+services:
+  load-calculator:
+    build: .                              # build locally instead of pulling
+    image: amp-academy-load-calculator    # local tag only
+    ports:
+      - "8888:80"                         # direct access at localhost:8888
+
+networks:
+  tutor-web:
+    external: true
+    name: tutor_local_default

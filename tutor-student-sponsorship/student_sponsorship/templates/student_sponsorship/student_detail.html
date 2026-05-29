@@ -1,0 +1,152 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}{{ sponsorship.invited_email }} — Detail{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}">{{ institution.name }}</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">{{ sponsorship.invited_email }}</li>
+{% endblock %}
+{% block page_heading %}Student Detail{% endblock %}
+
+{% block portal_content %}
+<div class="row">
+
+  <!-- Left: sponsorship info -->
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header font-weight-bold">Sponsorship</div>
+      <div class="card-body">
+        <dl class="row mb-0" style="font-size: 0.9rem;">
+          <dt class="col-5 text-muted font-weight-normal">Email</dt>
+          <dd class="col-7">{{ sponsorship.invited_email }}</dd>
+
+          <dt class="col-5 text-muted font-weight-normal">Name</dt>
+          <dd class="col-7">
+            {% if sponsorship.student %}
+              {{ sponsorship.student.get_full_name|default:"—" }}
+            {% else %}
+              <em class="text-muted">Not registered</em>
+            {% endif %}
+          </dd>
+
+          <dt class="col-5 text-muted font-weight-normal">Status</dt>
+          <dd class="col-7"><span class="sp-badge sp-badge--{{ sponsorship.status }}">{{ sponsorship.get_status_display }}</span></dd>
+
+          <dt class="col-5 text-muted font-weight-normal">Since</dt>
+          <dd class="col-7">{{ sponsorship.sponsor_start }}</dd>
+
+          {% if sponsorship.grace_end %}
+          <dt class="col-5 text-muted font-weight-normal">Access until</dt>
+          <dd class="col-7">{{ sponsorship.grace_end }}</dd>
+          {% endif %}
+
+          <dt class="col-5 text-muted font-weight-normal">Last login</dt>
+          <dd class="col-7">{{ progress.last_login|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    {% if invite_url %}
+    <div class="card mb-4" style="border-color: #ffe082;">
+      <div class="card-header" style="background: #fff8e1; border-color: #ffe082;">
+        <strong style="color: #795548;">Invitation Link</strong>
+      </div>
+      <div class="card-body" style="background: #fff8e1;">
+        <p class="small text-muted mb-2">Share this link with the student to activate their sponsorship.</p>
+        <div class="d-flex" style="gap: 0.5rem; align-items: flex-start;">
+          <textarea id="invite-url-input" readonly rows="3"
+                    class="form-control"
+                    style="font-size: 0.75rem; font-family: monospace; resize: none; word-break: break-all;">{{ invite_url }}</textarea>
+          <button id="invite-copy-btn" class="btn btn-outline-secondary btn-sm" style="white-space: nowrap;">Copy</button>
+        </div>
+        <script>
+        document.getElementById('invite-copy-btn').addEventListener('click', function() {
+          var ta = document.getElementById('invite-url-input');
+          ta.select();
+          ta.setSelectionRange(0, 99999);
+          var btn = this;
+          function done(ok) {
+            btn.textContent = ok ? 'Copied!' : 'Error';
+            setTimeout(function(){ btn.textContent = 'Copy'; }, 2000);
+          }
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(ta.value).then(function(){ done(true); }).catch(function(){ done(false); });
+          } else {
+            done(document.execCommand('copy'));
+          }
+        });
+        </script>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if not manager or manager.is_admin %}
+    <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+      {% if sponsorship.status == 'active' or sponsorship.status == 'pending' %}
+        <a href="{% url 'sponsorship:student_edit' institution_slug=institution.slug pk=sponsorship.pk %}"
+           class="btn btn-outline-secondary btn-sm">Edit</a>
+        <a href="{% url 'sponsorship:student_remove' institution_slug=institution.slug pk=sponsorship.pk %}"
+           class="btn btn-outline-danger btn-sm">Remove</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right: course progress -->
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header font-weight-bold">Course Progress</div>
+      <div class="card-body">
+        {% if not sponsorship.student %}
+          <p class="text-muted mb-0">Student has not registered yet — no progress to show.</p>
+        {% elif progress.courses %}
+          <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>Course</th>
+                  <th>Progress</th>
+                  <th>Grade</th>
+                  <th>Passed</th>
+                  <th>Last Activity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for course in progress.courses %}
+                <tr>
+                  <td style="font-size: 0.85rem;">{{ course.display_name }}</td>
+                  <td>
+                    <span class="sp-progress-bar">
+                      <span class="sp-progress-bar__fill" style="width: {{ course.percent }}%;"></span>
+                    </span>
+                    <span class="small ml-1">{{ course.percent }}%</span>
+                  </td>
+                  <td>{{ course.percent }}%</td>
+                  <td>
+                    {% if course.passed %}
+                      <span class="sp-badge sp-badge--active">Yes</span>
+                    {% else %}
+                      <span class="text-muted small">No</span>
+                    {% endif %}
+                  </td>
+                  <td class="small text-muted">{{ course.last_activity|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No active enrollments found.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mt-4">
+  <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}"
+     class="btn btn-outline-secondary btn-sm">← Back to Students</a>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}Claim Sponsorship{% endblock %}
+{% block page_heading %}Claim Your Sponsorship{% endblock %}
+
+{% block portal_content %}
+<div style="max-width: 480px;">
+  <p class="text-muted mb-2">
+    If your institution has added you as a sponsored student, enter the email address
+    they used below. It must match the email on your account.
+  </p>
+  <p class="text-muted mb-4">
+    Your account email is: <strong>{{ request.user.email }}</strong>
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="font-weight-bold">{{ form.email.label }}</label>
+      {{ form.email }}
+      {% if form.email.help_text %}
+        <small class="form-text text-muted">{{ form.email.help_text }}</small>
+      {% endif %}
+      {% if form.email.errors %}
+        <div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>
+      {% endif %}
+    </div>
+    <div style="margin-top: 1.5rem;">
+      <button type="submit" class="btn btn-primary">Claim Sponsorship</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

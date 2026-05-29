@@ -1,0 +1,48 @@
+{% extends "purchasing/base.html" %}
+{% load i18n %}
+
+{% block purchasing_title %}Order Confirmed{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Order Confirmed</li>
+{% endblock %}
+{% block page_heading %}Order Confirmed{% endblock %}
+
+{% block purchasing_content %}
+<div class="text-center py-4">
+  <div style="font-size: 3rem; color: var(--amp-primary, #0075b4);">✓</div>
+  <h2 class="h4 mt-2 mb-1">Thank you for your purchase!</h2>
+  <p class="text-muted mb-4">You have been enrolled in your course(s).</p>
+</div>
+
+{% if orders %}
+  <div class="table-responsive mb-4">
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          <th>Order ID</th>
+          <th>Course</th>
+          <th>Type</th>
+          <th class="text-right">Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td class="text-monospace small">{{ order.id }}</td>
+          <td>{{ order.course_id }}</td>
+          <td>{{ order.get_order_type_display }}</td>
+          <td class="text-right">${{ order.amount_usd }}</td>
+          <td><span class="badge badge-success">{{ order.get_status_display }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+<div class="d-flex justify-content-center gap-3">
+  <a href="/courses/" class="btn btn-primary mr-2">Go to My Courses</a>
+  <a href="{% url 'purchasing:orders' %}" class="btn btn-outline-secondary">View All Orders</a>
+</div>
+{% endblock %}

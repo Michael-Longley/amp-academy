@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutor-course-purchasing"
+version = "0.1.0"
+dependencies = ["tutor>=15.0.0", "djangorestframework"]
+
+[project.entry-points."tutor.plugin.v1"]
+course-purchasing = "tutorcoursepurchasing"
+
+[project.entry-points."lms.djangoapp"]
+course-purchasing = "purchasing.apps:PurchasingConfig"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tutorcoursepurchasing*", "purchasing*"]
+
+[tool.setuptools.package-data]
+purchasing = ["templates/**/*", "static/**/*"]

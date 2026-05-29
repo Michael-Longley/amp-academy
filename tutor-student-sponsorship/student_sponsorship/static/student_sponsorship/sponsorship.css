@@ -1,0 +1,55 @@
+/* Amp Academy — Sponsorship Portal styles
+ * Sponsorship-specific rules not covered by the LMS theme.
+ * Loaded via {% static 'student_sponsorship/sponsorship.css' %} in base.html.
+ * --amp-* CSS variables are defined by the LMS theme (_extras.scss) and are
+ * available on any page served by the LMS container.
+ */
+
+/* ── Status badges ─────────────────────────────────────────────────────────── */
+.sp-badge {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sp-badge--active    { background: #d4edda; color: #155724; }
+.sp-badge--pending   { background: #fff3cd; color: #856404; }
+.sp-badge--grace     { background: #fde8c8; color: #7a4500; }
+.sp-badge--expired   { background: #f5c6cb; color: #721c24; }
+.sp-badge--cancelled { background: #e2e3e5; color: #383d41; }
+
+/* ── Seat progress bar ─────────────────────────────────────────────────────── */
+.sp-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #dee2e6;
+  overflow: hidden;
+  min-width: 80px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.sp-progress-bar__fill {
+  height: 100%;
+  background: var(--amp-primary, #FFB100);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.sp-portal-main {
+  max-width: 1100px;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ── Breadcrumb ────────────────────────────────────────────────────────────── */
+.sp-portal-breadcrumb.breadcrumb {
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}

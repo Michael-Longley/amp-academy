@@ -1,0 +1,12 @@
+services:
+  load-calculator:
+    image: ghcr.io/michael-longley/amp-academy-load-calculator:latest
+    container_name: load-calculator
+    restart: unless-stopped
+    networks:
+      - tutor-web
+
+networks:
+  tutor-web:
+    external: true
+    name: tutor_local_default

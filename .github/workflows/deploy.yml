@@ -1,0 +1,118 @@
+name: Deploy to Production
+
+# Manual trigger only — no automatic deploys.
+# Run from: GitHub → Actions → "Deploy to Production" → Run workflow
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   DO_HOST     — server IP or hostname (e.g. 143.198.x.x)
+#   DO_USER     — SSH user (typically root)
+#   DO_SSH_KEY  — private SSH key whose public key is in ~/.ssh/authorized_keys on the server
+#
+# Required server setup (one-time):
+#   git clone https://github.com/michael-longley/amp-academy.git ~/amp-academy
+#   apt-get install -y make    # if not already installed
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: "Deploy type"
+        required: true
+        default: "quick"
+        type: choice
+        options:
+          - quick   # pip reinstall + container restart + migrate  (~2 min, no downtime)
+          - full    # full LMS image rebuild + restart + migrate   (~20 min, brief downtime)
+
+jobs:
+  deploy:
+    name: "Deploy (${{ inputs.deploy_type }})"
+    runs-on: ubuntu-latest
+    environment: production   # optional: add protection rules in Settings → Environments
+
+    steps:
+      # ── 1. Show what we're deploying ─────────────────────────────────────────
+      - name: Summarise deployment
+        run: |
+          echo "Deploy type : ${{ inputs.deploy_type }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Commit SHA  : ${{ github.sha }}"
+
+      # ── 2a. Quick deploy — pip reinstall + restart + migrate (~2 min) ────────
+      - name: Quick deploy
+        if: inputs.deploy_type == 'quick'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          # Pull the latest Makefile from git, then use it to reinstall plugins
+          # and run migrations. No Docker image rebuild — containers just restart
+          # with new Python packages. Typical downtime: ~30 seconds while LMS
+          # containers cycle.
+          script: |
+            set -e
+            export PATH="$HOME/.local/bin:$PATH"
+
+            echo "→ Pulling latest Makefile..."
+            cd ~/amp-academy
+            git pull --ff-only
+
+            echo "→ Reinstalling plugins + restarting containers..."
+            make update
+
+            echo "→ Running migrations..."
+            make migrate
+
+            echo "✓ Quick deploy complete."
+
+      # ── 2b. Full deploy — image rebuild + restart + migrate (~20 min) ────────
+      - name: Full deploy (image rebuild)
+        if: inputs.deploy_type == 'full'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          # Full Docker image rebuild — needed after SCSS/theme/Dockerfile changes.
+          # This takes ~15-20 minutes and causes a full Tutor restart.
+          # Tutor data (database, media, config) is never touched.
+          command_timeout: 30m
+          script: |
+            set -e
+            export PATH="$HOME/.local/bin:$PATH"
+
+            echo "→ Pulling latest Makefile..."
+            cd ~/amp-academy
+            git pull --ff-only
+
+            echo "→ Building OpenedX image (this takes ~15-20 min)..."
+            make build
+
+            echo "→ Running migrations..."
+            make migrate
+
+            echo "✓ Full deploy complete."
+
+      # ── 3. Health check ───────────────────────────────────────────────────────
+      - name: Health check
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            export PATH="$HOME/.local/bin:$PATH"
+            make health
+
+      # ── 4. Annotate the run ───────────────────────────────────────────────────
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "### Deployment summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | ${{ inputs.deploy_type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY

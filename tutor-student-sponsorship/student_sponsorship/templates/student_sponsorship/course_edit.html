@@ -1,0 +1,63 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}{{ institution.name }} — Edit Course{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}">{{ institution.name }}</a>
+  </li>
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}">Courses</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">Edit Course</li>
+{% endblock %}
+{% block page_heading %}Edit Course — {{ institution.name }}{% endblock %}
+
+{% block portal_content %}
+<div class="row">
+  <div class="col-md-7">
+    <p class="text-muted mb-1">
+      Updating the subsidy percentage affects the price students see at checkout going
+      forward. Students already enrolled are not affected.
+    </p>
+    <p class="mb-4">
+      <span class="font-weight-bold">Course:</span>
+      <code>{{ ica.course_id }}</code>
+    </p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {# course_id is read-only on edit — render the disabled field so its value is visible #}
+      <div class="form-group mb-3">
+        <label class="font-weight-bold">{{ form.course_id.label }}</label>
+        {{ form.course_id }}
+        <small class="form-text text-muted">Course ID cannot be changed. Remove and re-add to use a different ID.</small>
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="{{ form.subsidy_pct.id_for_label }}" class="font-weight-bold">
+          {{ form.subsidy_pct.label }}
+        </label>
+        <div class="input-group" style="max-width: 180px;">
+          {{ form.subsidy_pct }}
+          <div class="input-group-append">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+        {% if form.subsidy_pct.help_text %}
+          <small class="form-text text-muted">{{ form.subsidy_pct.help_text }}</small>
+        {% endif %}
+        {% for error in form.subsidy_pct.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="d-flex" style="gap: 0.5rem;">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}"
+           class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

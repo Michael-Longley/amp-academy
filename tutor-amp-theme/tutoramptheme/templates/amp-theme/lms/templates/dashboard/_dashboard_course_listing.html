@@ -1,0 +1,137 @@
+## mako
+<%page expression_filter="h" args="
+  course_overview,
+  cert_status=None,
+  enrollment=None,
+  show_unenroll_settings=False,
+  is_unfulfilled_entitlement=False,
+  entitlement=None,
+  course_entitlement_available_sessions=None,
+  unfulfilled_entitlement_pseudo_sessions=None,
+  course_mode='audit',
+  show_courseware_link=False,
+  dashboard_index=0,
+  share_settings=None,
+  course_modes_dict=None,
+  resume_button_url=None,
+  upgrade_url=None,
+  credit_status=None,
+  user=None
+"/>
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import gettext as _
+%>
+
+<%
+  mode_str = course_mode or 'audit'
+  is_verified = mode_str in ('verified', 'credit')
+  _cert = cert_status or {}
+  cert_earned = _cert.get('status') in ('downloadable', 'generating')
+  cert_url = _cert.get('download_url', '')
+  course_image = course_overview.image_urls.get('small', '') if hasattr(course_overview.image_urls, 'get') else ''
+  course_id_str = str(course_overview.course_id)
+  cleaned_resume_url = resume_button_url
+  if cleaned_resume_url and '/None/' in cleaned_resume_url:
+      cleaned_resume_url = '/courses/{}/course/'.format(course_id_str)
+  card_href = cleaned_resume_url if (show_courseware_link and cleaned_resume_url) else ''
+%>
+
+<li class="amp-course-card-item" data-course-id="${course_id_str}">
+  <article class="amp-course-card amp-course-card--${mode_str}">
+
+    <div class="amp-course-card-image-wrap">
+      % if card_href:
+        <a href="${card_href}" class="amp-course-card-image-link" tabindex="-1" aria-hidden="true">
+      % endif
+      <img src="${course_image}" alt="" class="amp-course-card-image" loading="lazy" />
+      % if cert_earned:
+        <span class="amp-course-card-ribbon">${_("Certificate Earned")}</span>
+      % elif is_verified:
+        <span class="amp-course-card-mode-pill">${_("Verified")}</span>
+      % endif
+      % if card_href:
+        </a>
+      % endif
+    </div>
+
+    <div class="amp-course-card-body">
+      <p class="amp-course-card-org">${course_overview.display_org_with_default}</p>
+      <h3 class="amp-course-card-title">
+        % if card_href:
+          <a href="${card_href}">${course_overview.display_name_with_default}</a>
+        % else:
+          ${course_overview.display_name_with_default}
+        % endif
+      </h3>
+
+      <div class="amp-course-card-actions">
+        <%include file="_dashboard_course_resume.html" args="
+          course_id=course_overview.course_id,
+          show_courseware_link=show_courseware_link,
+          resume_button_url=cleaned_resume_url,
+          is_unfulfilled_entitlement=is_unfulfilled_entitlement,
+          course_entitlement_available_sessions=course_entitlement_available_sessions,
+          unfulfilled_entitlement_pseudo_sessions=unfulfilled_entitlement_pseudo_sessions,
+          entitlement=entitlement
+        "/>
+      </div>
+
+      <footer class="amp-course-card-footer">
+        % if cert_earned and cert_url:
+          <a href="${cert_url}" class="amp-course-card-cert-link" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+            ${_("View Certificate")}
+          </a>
+        % endif
+        % if upgrade_url:
+          <a href="${upgrade_url}" class="amp-course-card-upgrade-link">${_("Upgrade")}</a>
+        % endif
+        % if show_unenroll_settings:
+          <div class="amp-course-gear wrapper-action-more">
+            <button
+              class="action-more amp-gear-btn"
+              aria-label="${_("Course options for {course_name}").format(course_name=course_overview.display_name_with_default)}"
+              aria-haspopup="true"
+              aria-expanded="false"
+              data-course-number="${course_id_str}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+              </svg>
+            </button>
+            <div class="actions-dropdown hidden" role="menu">
+              <ul class="actions-dropdown-list">
+                % if enrollment:
+                  <li class="actions-dropdown-item">
+                    <a
+                      href="#email-settings-modal"
+                      class="action action-email-settings"
+                      data-course-number="${course_id_str}"
+                      data-optout="${enrollment.is_active}"
+                      role="menuitem"
+                    >${_("Email Settings")}</a>
+                  </li>
+                  <li class="actions-dropdown-item">
+                    <a
+                      href="#unenroll-modal"
+                      class="action action-unenroll"
+                      data-course-id="${course_id_str}"
+                      data-course-number="${course_id_str}"
+                      data-course-name="${course_overview.display_name_with_default}"
+                      data-enrollment-mode="${mode_str}"
+                      role="menuitem"
+                    >${_("Unenroll")}</a>
+                  </li>
+                % endif
+              </ul>
+            </div>
+          </div>
+        % endif
+      </footer>
+    </div>
+
+  </article>
+</li>

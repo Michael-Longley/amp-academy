@@ -1,0 +1,1694 @@
+// ── Amp Academy — Custom CSS Rules ───────────────────────────────────────────
+// Loaded last in the SCSS chain; overrides everything upstream.
+// AMP_THEME_* config values are substituted by Tutor before SCSS compilation.
+
+// ── CSS custom properties (runtime-accessible tokens) ────────────────────────
+:root {
+  --amp-primary:      {{ AMP_THEME_PRIMARY_COLOR }};
+  --amp-secondary:    {{ AMP_THEME_SECONDARY_COLOR }};
+  --amp-confirm:      {{ AMP_THEME_CONFIRM_COLOR }};
+  --amp-notice:       {{ AMP_THEME_NOTICE_COLOR }};
+  --amp-bg:           {{ AMP_THEME_BG_COLOR }};
+  --amp-text:         {{ AMP_THEME_TEXT_COLOR }};
+  --amp-link:         {{ AMP_THEME_LINK_COLOR }};
+  --amp-navbar-bg:    {{ AMP_THEME_NAVBAR_BG }};
+  --amp-navbar-text:  {{ AMP_THEME_NAVBAR_TEXT }};
+  --amp-radius:       6px;
+  --amp-shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --amp-shadow-md:    0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+  --amp-shadow-lg:    0 10px 30px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+  --amp-transition:   0.18s ease;
+}
+
+// ── Base resets ───────────────────────────────────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: {{ AMP_THEME_BG_COLOR }};
+  color: {{ AMP_THEME_TEXT_COLOR }};
+  font-family: {{ AMP_THEME_FONT_FAMILY }};
+}
+
+a {
+  color: {{ AMP_THEME_LINK_COLOR }};
+  text-decoration: none;
+  transition: color var(--amp-transition);
+
+  &:hover {
+    color: {{ AMP_THEME_SECONDARY_COLOR }};
+    text-decoration: underline;
+  }
+}
+
+// ── Global layout ─────────────────────────────────────────────────────────────
+.wrapper,
+.container-fluid {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── HEADER / NAVBAR
+// ── ─────────────────────────────────────────────────────────────────────────
+
+header.global-header,
+.global-header {
+  background-color: {{ AMP_THEME_NAVBAR_BG }};
+  border-bottom: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06), var(--amp-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    gap: 1.5rem;
+  }
+}
+
+// Logo area
+.header-logo {
+  flex-shrink: 0;
+
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.9;
+      text-decoration: none;
+    }
+  }
+
+  img.logo {
+    height: 36px;
+    width: auto;
+    display: block;
+  }
+
+  // Course context: show provider/name next to logo
+  .course-header {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.15);
+
+    .provider {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
+
+    .course-name {
+      font-size: 0.8rem;
+      color: #fff;
+      font-weight: 500;
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .course-number {
+      display: none;
+    }
+  }
+}
+
+// Nav links — both authenticated and not
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
+
+  .main {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
+  .nav-item {
+    a {
+      display: block;
+      padding: 0.4rem 0.75rem;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--amp-radius);
+      transition: color var(--amp-transition), background-color var(--amp-transition);
+      text-decoration: none;
+
+      &:hover {
+        color: #fff;
+        background-color: rgba(255,255,255,0.08);
+        text-decoration: none;
+      }
+    }
+
+    &.nav-tab a.active,
+    &.nav-tab a.tab-nav-link.active {
+      color: {{ AMP_THEME_PRIMARY_COLOR }};
+      background-color: rgba(255,177,0,0.12);
+
+      &:hover {
+        background-color: rgba(255,177,0,0.18);
+      }
+    }
+  }
+}
+
+// Auth buttons (unauthenticated nav)
+.btn-amp-outline {
+  background-color: transparent;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: #fff !important;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.375rem 1rem;
+  border-radius: var(--amp-radius);
+  transition: border-color var(--amp-transition), background-color var(--amp-transition);
+
+  &:hover {
+    border-color: rgba(255,255,255,0.7);
+    background-color: rgba(255,255,255,0.08);
+    text-decoration: none;
+  }
+}
+
+.btn-amp-primary {
+  background-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  border: 1.5px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.375rem 1rem;
+  border-radius: var(--amp-radius);
+  transition: background-color var(--amp-transition), box-shadow var(--amp-transition);
+
+  &:hover {
+    background-color: #CC8D00;
+    border-color: #CC8D00;
+    box-shadow: 0 0 0 3px rgba(255,177,0,0.25);
+    text-decoration: none;
+  }
+}
+
+// Legacy selectors used by the default header markup
+.register-btn.btn {
+  @extend .btn-amp-outline;
+}
+
+.sign-in-btn.btn {
+  @extend .btn-amp-primary;
+}
+
+// User dropdown
+.nav-item-dropdown {
+  position: relative;
+  cursor: pointer;
+
+  .toggle-user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--amp-radius);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color var(--amp-transition), color var(--amp-transition);
+    user-select: none;
+
+    &:hover,
+    &[aria-expanded="true"] {
+      background-color: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .user-avatar-wrapper {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1.5px solid rgba(255,177,0,0.6);
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .username {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-caret {
+      opacity: 0.6;
+      transition: transform var(--amp-transition);
+    }
+
+    &[aria-expanded="true"] .dropdown-caret {
+      transform: rotate(180deg);
+    }
+  }
+
+  .dropdown-user-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 200px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: var(--amp-shadow-lg);
+    z-index: 1100;
+    overflow: hidden;
+
+    &.hidden {
+      display: none;
+    }
+
+    .dropdown-header {
+      padding: 0.75rem 1rem 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+
+      .dropdown-username {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: {{ AMP_THEME_SECONDARY_COLOR }};
+      }
+    }
+
+    .dropdown-item {
+      a {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.6rem 1rem;
+        color: {{ AMP_THEME_TEXT_COLOR }};
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background-color var(--amp-transition);
+        text-decoration: none;
+
+        svg {
+          opacity: 0.5;
+          flex-shrink: 0;
+        }
+
+        &:hover {
+          background-color: {{ AMP_THEME_BG_COLOR }};
+          color: {{ AMP_THEME_SECONDARY_COLOR }};
+          text-decoration: none;
+
+          svg {
+            opacity: 1;
+            color: {{ AMP_THEME_PRIMARY_COLOR }};
+          }
+        }
+      }
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: #f0f0f0;
+      margin: 0.25rem 0;
+    }
+
+    .dropdown-signout a {
+      color: {{ AMP_THEME_NOTICE_COLOR }};
+
+      &:hover {
+        background-color: rgba(192,57,43,0.06);
+        color: {{ AMP_THEME_NOTICE_COLOR }};
+      }
+    }
+  }
+}
+
+// Hamburger menu button
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: var(--amp-radius);
+  cursor: pointer;
+  padding: 0;
+  gap: 5px;
+  transition: background-color var(--amp-transition);
+
+  &:hover {
+    background-color: rgba(255,255,255,0.08);
+  }
+
+  .line {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: rgba(255,255,255,0.85);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease, width 0.2s ease;
+    transform-origin: center;
+
+    &:last-child {
+      display: none; // 4th line used for X animation
+    }
+  }
+}
+
+// Mobile menu
+.mobile-menu {
+  display: none;
+  background-color: {{ AMP_THEME_NAVBAR_BG }};
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 0.75rem 0;
+
+  &:not(.hidden) {
+    display: block;
+  }
+
+  .mobile-nav-item {
+    display: block !important;
+
+    a {
+      display: block;
+      padding: 0.6rem 1.5rem;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover {
+        color: #fff;
+        background-color: rgba(255,255,255,0.06);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .hidden-mobile {
+    display: none !important;
+  }
+
+  .main-header {
+    height: 56px !important;
+  }
+}
+
+// Slim header (inside courseware)
+.global-header.slim {
+  .main-header {
+    height: 52px;
+  }
+
+  .header-logo img.logo {
+    height: 28px;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── HOMEPAGE / HERO
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.home-page .home.style-logout {
+  header {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+}
+
+.amp-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  min-height: 500px;
+  padding: 5rem 0 4rem;
+
+  .outer-wrapper & {
+    padding: 0;
+  }
+}
+
+.outer-wrapper {
+  background: linear-gradient(135deg, {{ AMP_THEME_SECONDARY_COLOR }} 0%, #1a2027 100%);
+  padding: 5rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,177,0,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.amp-hero-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.amp-hero-eyebrow {
+  display: inline-block;
+  background-color: rgba(255,177,0,0.15);
+  color: {{ AMP_THEME_PRIMARY_COLOR }};
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border-radius: 2rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255,177,0,0.25);
+}
+
+.amp-hero-heading {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.amp-hero-highlight {
+  color: {{ AMP_THEME_PRIMARY_COLOR }};
+  position: relative;
+}
+
+.amp-hero-subheading {
+  font-size: 1.0625rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.65;
+  margin: 0 0 2rem;
+  max-width: 500px;
+}
+
+.amp-hero-cta {
+  display: flex;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.amp-hero-btn-primary {
+  background-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--amp-radius);
+  border: 2px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  transition: background-color var(--amp-transition), box-shadow var(--amp-transition), transform var(--amp-transition);
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #CC8D00;
+    border-color: #CC8D00;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,177,0,0.35);
+    text-decoration: none;
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+  }
+}
+
+.amp-hero-btn-secondary {
+  background-color: transparent;
+  color: rgba(255,255,255,0.85) !important;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--amp-radius);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  transition: border-color var(--amp-transition), background-color var(--amp-transition);
+
+  &:hover {
+    border-color: rgba(255,255,255,0.7);
+    background-color: rgba(255,255,255,0.06);
+    text-decoration: none;
+    color: #fff !important;
+  }
+}
+
+.amp-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.amp-hero-stat {
+  display: flex;
+  flex-direction: column;
+
+  .amp-hero-stat-number {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: {{ AMP_THEME_PRIMARY_COLOR }};
+    line-height: 1;
+  }
+
+  .amp-hero-stat-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.2rem;
+    font-weight: 600;
+  }
+}
+
+.amp-hero-stat-divider {
+  width: 1px;
+  height: 32px;
+  background-color: rgba(255,255,255,0.12);
+}
+
+// Hero decorative graphic
+.amp-hero-visual {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  height: 280px;
+  position: relative;
+}
+
+.amp-hero-graphic {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.amp-circuit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,177,0,0.15);
+
+  &.amp-circuit-ring-1 {
+    width: 100%;
+    height: 100%;
+    animation: spin-slow 20s linear infinite;
+    border-top-color: rgba(255,177,0,0.4);
+  }
+
+  &.amp-circuit-ring-2 {
+    width: 75%;
+    height: 75%;
+    animation: spin-slow 14s linear infinite reverse;
+    border-right-color: rgba(255,177,0,0.3);
+  }
+
+  &.amp-circuit-ring-3 {
+    width: 50%;
+    height: 50%;
+    background: rgba(255,177,0,0.04);
+    border-color: rgba(255,177,0,0.1);
+  }
+}
+
+.amp-circuit-bolt {
+  color: {{ AMP_THEME_PRIMARY_COLOR }};
+  filter: drop-shadow(0 0 16px rgba(255,177,0,0.5));
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(255,177,0,0.4)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(255,177,0,0.7)); }
+}
+
+@media (max-width: 768px) {
+  .amp-hero {
+    flex-direction: column;
+    padding: 3rem 0 2rem;
+    text-align: center;
+  }
+
+  .amp-hero-subheading {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .amp-hero-cta {
+    justify-content: center;
+  }
+
+  .amp-hero-stats {
+    justify-content: center;
+  }
+
+  .amp-hero-visual {
+    display: none;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── FOOTER
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.wrapper-footer,
+.amp-footer {
+  background-color: {{ AMP_THEME_SECONDARY_COLOR }};
+}
+
+.amp-footer {
+  color: rgba(255,255,255,0.75);
+  padding: 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.amp-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.amp-footer-brand {
+  .amp-footer-logo-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .amp-footer-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+
+  .amp-footer-tagline {
+    font-size: 0.8125rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+  }
+
+  .amp-footer-powered {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    img {
+      opacity: 0.4;
+      filter: brightness(0) invert(1);
+      transition: opacity var(--amp-transition);
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+
+  .amp-footer-openedx-link {
+    text-decoration: none;
+  }
+}
+
+.amp-footer-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.amp-footer-nav-group {
+  .amp-footer-nav-heading {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    margin: 0 0 0.875rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  li a {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color var(--amp-transition);
+
+    &:hover {
+      color: {{ AMP_THEME_PRIMARY_COLOR }};
+      text-decoration: none;
+    }
+  }
+}
+
+.amp-footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.25rem 2rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .amp-footer-copyright {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .amp-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .amp-footer-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .amp-footer-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── BUTTONS (global)
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.btn {
+  font-family: {{ AMP_THEME_FONT_FAMILY }};
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color var(--amp-transition), border-color var(--amp-transition),
+              box-shadow var(--amp-transition), transform var(--amp-transition),
+              color var(--amp-transition);
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.btn-primary {
+  background-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  border-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+
+  &:hover,
+  &:focus {
+    background-color: #CC8D00;
+    border-color: #CC8D00;
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+    box-shadow: 0 0 0 3px rgba(255,177,0,0.2);
+  }
+}
+
+.btn-outline-primary {
+  color: {{ AMP_THEME_PRIMARY_COLOR }};
+  border-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  background-color: transparent;
+
+  &:hover {
+    background-color: {{ AMP_THEME_PRIMARY_COLOR }};
+    color: {{ AMP_THEME_SECONDARY_COLOR }};
+    box-shadow: 0 0 0 3px rgba(255,177,0,0.15);
+  }
+}
+
+.btn-secondary {
+  background-color: {{ AMP_THEME_SECONDARY_COLOR }};
+  border-color: {{ AMP_THEME_SECONDARY_COLOR }};
+  color: #fff !important;
+
+  &:hover {
+    background-color: #1a1f24;
+    border-color: #1a1f24;
+  }
+}
+
+.action-primary,
+.btn-brand {
+  background-color: {{ AMP_THEME_ACCENT_COLOR }};
+  border-color: {{ AMP_THEME_ACCENT_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+
+  &:hover {
+    background-color: #CC8D00;
+    border-color: #CC8D00;
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── COURSE CARDS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.course-card,
+.course-summary,
+.discovery-card,
+.course-info-container {
+  background: #fff;
+  border: 1px solid #e8ecf0;
+  border-radius: 10px;
+  box-shadow: var(--amp-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--amp-transition), transform var(--amp-transition);
+
+  &:hover {
+    box-shadow: var(--amp-shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+}
+
+.course-card__title,
+.course-title,
+.course-name a {
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: color var(--amp-transition);
+
+  &:hover {
+    color: {{ AMP_THEME_PRIMARY_COLOR }};
+    text-decoration: none;
+  }
+}
+
+// Amber left-border accent on course listings
+.courses-list .course-item,
+.find-courses .course-listing-item {
+  border-left: 3px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  border-radius: 0 8px 8px 0;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── DASHBOARD
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.dashboard-container {
+  background-color: {{ AMP_THEME_BG_COLOR }};
+}
+
+.learner-profile-page,
+.dashboard {
+  background-color: {{ AMP_THEME_BG_COLOR }};
+}
+
+// Dashboard tabs
+.dashboard-tabs,
+.learner-profile-page .learner-profile-page-header {
+  .nav-tabs {
+    border-bottom: 2px solid #e2e8f0;
+
+    .nav-link {
+      color: rgba(36,41,46,0.6);
+      font-weight: 500;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      padding: 0.625rem 1rem;
+      border-radius: 0;
+      transition: color var(--amp-transition), border-color var(--amp-transition);
+
+      &:hover {
+        color: {{ AMP_THEME_SECONDARY_COLOR }};
+        border-bottom-color: rgba(255,177,0,0.4);
+      }
+
+      &.active {
+        color: {{ AMP_THEME_PRIMARY_COLOR }};
+        border-bottom-color: {{ AMP_THEME_PRIMARY_COLOR }};
+        font-weight: 600;
+        background: transparent;
+      }
+    }
+  }
+}
+
+// Hide sidebar, make main content full-width
+.dashboard .side-container {
+  display: none;
+}
+
+.dashboard .main-container {
+  flex: 1 1 100% !important;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+// Dashboard section header
+.amp-dashboard-section-header,
+.wrapper-header-courses {
+  padding: 2.5rem 0 1.5rem;
+}
+
+.amp-dashboard-heading,
+.header-courses {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  margin: 0 0 0.25rem;
+}
+
+.amp-dashboard-subheading {
+  font-size: 0.875rem;
+  color: rgba(36,41,46,0.5);
+  margin: 0;
+}
+
+// Course listing grid
+ul.listing-courses {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+// ── AMP Course Card ──────────────────────────────────────────────────────────
+
+.amp-course-card-item {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.amp-course-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e8ecf0;
+  box-shadow: var(--amp-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--amp-transition), transform var(--amp-transition);
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: #e8ecf0;
+    flex-shrink: 0;
+  }
+
+  &.amp-course-card--verified,
+  &.amp-course-card--credit {
+    &::before {
+      background: {{ AMP_THEME_PRIMARY_COLOR }};
+    }
+  }
+
+  &:hover {
+    box-shadow: var(--amp-shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+// Image area
+.amp-course-card-image-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #e8ecf0;
+  flex-shrink: 0;
+}
+
+.amp-course-card-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.amp-course-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block;
+
+  .amp-course-card:hover & {
+    transform: scale(1.04);
+  }
+}
+
+.amp-course-card-ribbon {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  background: rgba(39, 174, 96, 0.92);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+}
+
+.amp-course-card-mode-pill {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  background: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+}
+
+// Card body
+.amp-course-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1rem;
+}
+
+.amp-course-card-org {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(36,41,46,0.45);
+  margin: 0 0 0.375rem;
+}
+
+.amp-course-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  line-height: 1.4;
+  margin: 0 0 1rem;
+  flex: 1;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--amp-transition);
+
+    &:hover {
+      color: {{ AMP_THEME_PRIMARY_COLOR }};
+      text-decoration: none;
+    }
+  }
+}
+
+// Resume / Start button container
+.amp-course-card-actions {
+  margin-bottom: 0.75rem;
+
+  // Style any button the resume template renders
+  .btn,
+  a.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: {{ AMP_THEME_PRIMARY_COLOR }} !important;
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+    border: none !important;
+    border-radius: var(--amp-radius) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 700 !important;
+    padding: 0.5rem 1.125rem !important;
+    text-decoration: none !important;
+    transition: background-color var(--amp-transition), box-shadow var(--amp-transition) !important;
+
+    &:hover {
+      background-color: #CC8D00 !important;
+      box-shadow: 0 2px 8px rgba(255,177,0,0.3) !important;
+      transform: none !important;
+    }
+  }
+
+  // "Select a session" link for entitlements
+  .action-session-selector {
+    font-size: 0.8125rem;
+    color: {{ AMP_THEME_LINK_COLOR }};
+    font-weight: 600;
+  }
+}
+
+// Card footer
+.amp-course-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f0f4f8;
+  margin-top: auto;
+}
+
+.amp-course-card-cert-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #27ae60;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: #1e8449;
+    text-decoration: underline;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.amp-course-card-upgrade-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: {{ AMP_THEME_PRIMARY_COLOR }};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Gear / options menu
+.amp-course-gear {
+  margin-left: auto;
+  position: relative;
+}
+
+.amp-gear-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0.3rem !important;
+  color: rgba(36,41,46,0.35) !important;
+  cursor: pointer;
+  border-radius: var(--amp-radius);
+  line-height: 0;
+  transition: color var(--amp-transition), background-color var(--amp-transition);
+
+  &:hover {
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+    background-color: #f0f4f8 !important;
+  }
+}
+
+.amp-course-gear .actions-dropdown {
+  position: absolute;
+  bottom: calc(100% + 0.375rem);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid #e8ecf0;
+  border-radius: 8px;
+  box-shadow: var(--amp-shadow-md);
+  z-index: 200;
+  overflow: hidden;
+
+  &.hidden {
+    display: none;
+  }
+
+  .actions-dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+  }
+
+  .actions-dropdown-item a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: {{ AMP_THEME_TEXT_COLOR }};
+    text-decoration: none;
+    transition: background-color var(--amp-transition);
+
+    &:hover {
+      background-color: #f5f7fa;
+      color: {{ AMP_THEME_SECONDARY_COLOR }};
+      text-decoration: none;
+    }
+  }
+}
+
+// Empty dashboard state
+.empty-dashboard-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+  color: rgba(36,41,46,0.5);
+
+  p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn,
+  a.btn {
+    background: {{ AMP_THEME_PRIMARY_COLOR }};
+    color: {{ AMP_THEME_SECONDARY_COLOR }} !important;
+    font-weight: 700;
+    border: none;
+    padding: 0.625rem 1.5rem;
+    border-radius: var(--amp-radius);
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      background: #CC8D00;
+      text-decoration: none;
+    }
+  }
+}
+
+// Dashboard responsive grid
+@media (max-width: 992px) {
+  ul.listing-courses {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  ul.listing-courses {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── LOGIN & REGISTRATION
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.login-register {
+  background-color: {{ AMP_THEME_BG_COLOR }};
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-register-header,
+.register-header,
+.login-header {
+  background: linear-gradient(135deg, {{ AMP_THEME_SECONDARY_COLOR }}, #1a2027);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px 10px 0 0;
+  text-align: center;
+
+  h1, h2, h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  img.logo {
+    height: 36px;
+    margin-bottom: 1rem;
+  }
+}
+
+.login-form,
+.register-form,
+.form-signin {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--amp-shadow-lg);
+  overflow: hidden;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── FORM CONTROLS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  border: 1.5px solid #d0d7de;
+  border-radius: var(--amp-radius);
+  font-family: {{ AMP_THEME_FONT_FAMILY }};
+  font-size: 0.9375rem;
+  transition: border-color var(--amp-transition), box-shadow var(--amp-transition);
+  background-color: #fff;
+
+  &:focus {
+    border-color: {{ AMP_THEME_PRIMARY_COLOR }};
+    box-shadow: 0 0 0 3px rgba(255,177,0,0.18);
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #a0aec0;
+  }
+}
+
+// Labels
+.form-group label,
+.field-group label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  margin-bottom: 0.3rem;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── COURSE OUTLINE / SIDEBAR
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.course-sidebar,
+.sequence-nav,
+.courseware-sidebar {
+  background: #fff;
+  border-right: 1px solid #e8ecf0;
+
+  .active,
+  .current,
+  .is-active {
+    border-left: 3px solid {{ AMP_THEME_PRIMARY_COLOR }};
+    background-color: rgba(255,177,0,0.06);
+    color: {{ AMP_THEME_SECONDARY_COLOR }};
+    font-weight: 600;
+  }
+
+  a {
+    transition: background-color var(--amp-transition), color var(--amp-transition);
+
+    &:hover {
+      background-color: {{ AMP_THEME_BG_COLOR }};
+      text-decoration: none;
+    }
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── PROGRESS BARS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.progress {
+  background-color: #e8ecf0;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, {{ AMP_THEME_PRIMARY_COLOR }}, #CC8D00);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── ALERTS & NOTIFICATIONS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.alert {
+  border-radius: var(--amp-radius);
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding: 0.875rem 1rem;
+  font-size: 0.9rem;
+}
+
+.alert-info {
+  background-color: rgba(41,128,185,0.07);
+  border-color: {{ AMP_THEME_CONFIRM_COLOR }};
+  color: {{ AMP_THEME_CONFIRM_COLOR }};
+}
+
+.alert-warning {
+  background-color: rgba(255,177,0,0.08);
+  border-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: #7A5600;
+}
+
+.alert-success {
+  background-color: rgba(39,174,96,0.07);
+  border-color: #27ae60;
+  color: #1e8449;
+}
+
+.alert-notice,
+.alert-danger,
+.alert-error {
+  background-color: rgba(192,57,43,0.07);
+  border-color: {{ AMP_THEME_NOTICE_COLOR }};
+  color: {{ AMP_THEME_NOTICE_COLOR }};
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── BREADCRUMBS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.breadcrumbs,
+.breadcrumb,
+nav[aria-label="breadcrumb"] {
+  .nav-item a,
+  .breadcrumb-item a {
+    color: {{ AMP_THEME_LINK_COLOR }};
+    font-size: 0.8125rem;
+
+    &:hover {
+      color: {{ AMP_THEME_SECONDARY_COLOR }};
+    }
+  }
+
+  .breadcrumb-item.active,
+  .nav-item.current {
+    color: {{ AMP_THEME_TEXT_COLOR }};
+    font-size: 0.8125rem;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── PAGE HEADINGS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: {{ AMP_THEME_FONT_FAMILY }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-weight: 700;
+}
+
+.page-header,
+.section-header {
+  border-bottom: 2px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  padding-bottom: 0.625rem;
+  margin-bottom: 1.5rem;
+
+  h1, h2 {
+    font-size: 1.75rem;
+    letter-spacing: -0.01em;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── STAFF / PREVIEW INDICATORS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.staff-indicator,
+.preview-menu {
+  background-color: {{ AMP_THEME_ACCENT_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── MODALS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.modal-content {
+  border: none;
+  border-radius: 10px;
+  box-shadow: var(--amp-shadow-lg);
+}
+
+.modal-header {
+  border-bottom: 1px solid #e8ecf0;
+  padding: 1.25rem 1.5rem;
+
+  .modal-title {
+    font-weight: 700;
+    color: {{ AMP_THEME_SECONDARY_COLOR }};
+  }
+
+  .close {
+    color: #718096;
+    opacity: 1;
+    font-size: 1.25rem;
+
+    &:hover {
+      color: {{ AMP_THEME_SECONDARY_COLOR }};
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e8ecf0;
+  padding: 1rem 1.5rem;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── BADGES & TAGS
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.badge,
+.badge-primary {
+  background-color: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  border-radius: 3px;
+  padding: 0.25em 0.5em;
+}
+
+.badge-secondary {
+  background-color: {{ AMP_THEME_SECONDARY_COLOR }};
+  color: #fff;
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── CERTIFICATES
+// ── ─────────────────────────────────────────────────────────────────────────
+
+.accomplishment-main {
+  .accomplishment-orgs {
+    border-top: 3px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  }
+
+  .accomplishment-signatories {
+    border-top: 1px solid #e8ecf0;
+  }
+}
+
+// ── ─────────────────────────────────────────────────────────────────────────
+// ── FOCUS / ACCESSIBILITY
+// ── ─────────────────────────────────────────────────────────────────────────
+
+:focus-visible {
+  outline: 2px solid {{ AMP_THEME_PRIMARY_COLOR }};
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.sr-only,
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Skip-to-content link
+.skip-to-content:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 9999;
+  background: {{ AMP_THEME_PRIMARY_COLOR }};
+  color: {{ AMP_THEME_SECONDARY_COLOR }};
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: var(--amp-radius);
+}

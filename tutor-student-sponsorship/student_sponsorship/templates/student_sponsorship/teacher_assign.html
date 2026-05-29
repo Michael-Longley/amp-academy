@@ -1,0 +1,60 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}Assign Students — {{ teacher.user.email }}{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}">{{ institution.name }}</a>
+  </li>
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}">Teachers</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">{{ teacher.user.email }}</li>
+{% endblock %}
+{% block page_heading %}Assign Students to {{ teacher.user.email }}{% endblock %}
+
+{% block portal_content %}
+<p class="text-muted mb-4">
+  Select which students this teacher can view. Unselected students will be removed from their view.
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  {% if all_sponsorships %}
+  <div class="table-responsive mb-4">
+    <table class="table table-hover table-sm">
+      <thead class="thead-light">
+        <tr>
+          <th style="width: 40px;"></th>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in all_sponsorships %}
+        <tr>
+          <td>
+            <input type="checkbox" name="sponsorships" value="{{ s.pk }}"
+                   {% if s.pk in assigned_ids %}checked{% endif %}
+                   style="cursor: pointer; width: 16px; height: 16px;">
+          </td>
+          <td>{{ s.invited_email }}</td>
+          <td>
+            {% if s.student %}{{ s.student.get_full_name|default:s.student.username }}{% else %}—{% endif %}
+          </td>
+          <td><span class="sp-badge sp-badge--{{ s.status }}">{{ s.get_status_display }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-muted mb-4">No active students to assign.</p>
+  {% endif %}
+
+  <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+    <button type="submit" class="btn btn-primary">Save Assignments</button>
+    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

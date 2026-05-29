@@ -1,0 +1,34 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}Sponsorship Portal{% endblock %}
+{% block page_heading %}Sponsorship Portal{% endblock %}
+
+{% block portal_content %}
+{% if institutions %}
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3">
+    {% for inst in institutions %}
+    <div class="col mb-4">
+      <a href="{% url 'sponsorship:student_list' institution_slug=inst.slug %}"
+         class="card h-100 text-decoration-none text-dark"
+         style="border-left: 4px solid var(--amp-primary, #0075b4);">
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold" style="color: var(--amp-primary, #0075b4);">{{ inst.name }}</h5>
+          <p class="card-text text-muted small mb-0">
+            {% if inst.seat_limit == 0 %}
+              {{ inst.seats_used }} student{{ inst.seats_used|pluralize }} sponsored
+            {% else %}
+              {{ inst.seats_used }} / {{ inst.seat_limit }} seats used
+            {% endif %}
+          </p>
+          {% if not inst.is_active %}
+            <div class="mt-2"><span class="sp-badge sp-badge--expired">Inactive</span></div>
+          {% endif %}
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">You are not assigned to any institutions. Contact Amp Academy if this is a mistake.</p>
+{% endif %}
+{% endblock %}

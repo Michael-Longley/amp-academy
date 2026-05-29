@@ -1,0 +1,6 @@
+routes:
+  - name: "Load Calculator"       # shown in the fallback error message
+    subdomain: "calculator"       # served at calculator.<domain>
+    domain: "amp-academy.com"     # optional: explicit domain; omit to use Tutor's LMS_HOST
+    container: "load-calculator"  # must match container_name in docker-compose.yml
+    port: 80                      # internal port the Nginx container listens on

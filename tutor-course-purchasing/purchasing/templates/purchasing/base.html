@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% load i18n static %}
+
+{% block title %}{% block purchasing_title %}Course Store{% endblock %} — {{ settings.PLATFORM_NAME }}{% endblock %}
+
+{% block content %}
+  <main class="container pu-main">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb pu-breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'purchasing:catalog' %}">Course Store</a></li>
+        {% block breadcrumb %}{% endblock %}
+      </ol>
+    </nav>
+
+    <div class="border-bottom mb-4 pb-2 d-flex align-items-center justify-content-between">
+      <h1 class="h3 mb-0">{% block page_heading %}{% endblock %}</h1>
+      {% block page_actions %}{% endblock %}
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% block purchasing_content %}{% endblock %}
+  </main>
+{% endblock %}

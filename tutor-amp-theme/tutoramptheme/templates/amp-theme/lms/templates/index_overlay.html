@@ -1,0 +1,50 @@
+## mako
+<%page expression_filter="h"/>
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import gettext as _
+%>
+
+<div class="amp-hero">
+  <div class="amp-hero-content">
+    <div class="amp-hero-eyebrow">${_("Professional Development")}</div>
+    <h1 class="amp-hero-heading">
+      ${_("Level Up Your")} <span class="amp-hero-highlight">${_("Electrical Career")}</span>
+    </h1>
+    <p class="amp-hero-subheading">
+      ${_("Expert-led courses in NEC code, load calculations, energy systems, and more — built for working professionals.")}
+    </p>
+    <div class="amp-hero-cta">
+      <a href="/register" class="btn amp-hero-btn-primary">${_("Start Learning Free")}</a>
+      <a href="/courses" class="btn amp-hero-btn-secondary">${_("Browse Courses")}</a>
+    </div>
+    <div class="amp-hero-stats">
+      <div class="amp-hero-stat">
+        <span class="amp-hero-stat-number">50+</span>
+        <span class="amp-hero-stat-label">${_("Courses")}</span>
+      </div>
+      <div class="amp-hero-stat-divider"></div>
+      <div class="amp-hero-stat">
+        <span class="amp-hero-stat-number">CE</span>
+        <span class="amp-hero-stat-label">${_("Credits Available")}</span>
+      </div>
+      <div class="amp-hero-stat-divider"></div>
+      <div class="amp-hero-stat">
+        <span class="amp-hero-stat-number">NEC</span>
+        <span class="amp-hero-stat-label">${_("Code Aligned")}</span>
+      </div>
+    </div>
+  </div>
+  <div class="amp-hero-visual" aria-hidden="true">
+    <div class="amp-hero-graphic">
+      <div class="amp-circuit-ring amp-circuit-ring-1"></div>
+      <div class="amp-circuit-ring amp-circuit-ring-2"></div>
+      <div class="amp-circuit-ring amp-circuit-ring-3"></div>
+      <div class="amp-circuit-bolt">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>

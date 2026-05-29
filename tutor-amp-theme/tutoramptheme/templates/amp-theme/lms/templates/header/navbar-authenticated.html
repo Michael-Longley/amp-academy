@@ -1,0 +1,58 @@
+## mako
+
+<%page expression_filter="h" args="online_help_token"/>
+
+<%namespace name='static' file='../static_content.html'/>
+<%namespace file='../main.html' import="login_query"/>
+<%!
+from django.urls import reverse
+from django.utils.translation import gettext as _
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+%>
+
+<%
+  show_explore_courses = settings.FEATURES.get('COURSES_ARE_BROWSABLE') or settings.FEATURES.get('ENABLE_COURSE_DISCOVERY')
+%>
+
+<div class="nav-links">
+  <div class="main">
+    % if show_dashboard_tabs:
+      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+        <a class="${'active ' if reverse('dashboard') == request.path else ''}tab-nav-link"
+           href="${reverse('dashboard')}"
+           aria-current="${'page' if reverse('dashboard') == request.path else 'false'}">
+          ${_("My Courses")}
+        </a>
+      </div>
+      % if show_program_listing:
+        <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+          <a class="${'active ' if reverse('program_listing_view') in request.path else ''}tab-nav-link"
+             href="${reverse('program_listing_view')}"
+             aria-current="${'page' if reverse('program_listing_view') == request.path else 'false'}">
+            ${_("Programs")}
+          </a>
+        </div>
+      % endif
+    % endif
+    % if show_explore_courses:
+      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+        <a class="${'active ' if '/courses' in request.path else ''}tab-nav-link"
+           href="${marketing_link('COURSES')}"
+           aria-current="${'page' if '/courses' in request.path else 'false'}">
+          ${_("Discover")}
+        </a>
+      </div>
+    % endif
+    {% if AMP_THEME_TOOL_LINK_URL %}
+      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+        <a href="{{ AMP_THEME_TOOL_LINK_URL }}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="tab-nav-link">{{ AMP_THEME_TOOL_LINK_LABEL }}</a>
+      </div>
+    {% endif %}
+  </div>
+  <div class="secondary d-flex align-items-center">
+    <%include file="user_dropdown.html"/>
+  </div>
+</div>

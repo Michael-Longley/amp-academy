@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutor-student-sponsorship"
+version = "0.1.0"
+dependencies = ["tutor>=15.0.0"]
+
+[project.entry-points."tutor.plugin.v1"]
+student-sponsorship = "tutorstudensponsorship"
+
+[project.entry-points."lms.djangoapp"]
+student-sponsorship = "student_sponsorship.apps:StudentSponsorshipConfig"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tutorstudensponsorship*", "student_sponsorship*"]
+
+[tool.setuptools.package-data]
+student_sponsorship = ["templates/**/*"]

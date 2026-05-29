@@ -1,0 +1,92 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+  from datetime import datetime
+  from django.urls import reverse
+  from django.utils.translation import gettext as _
+  from lms.djangoapps.branding.api import get_footer
+  from openedx.core.djangoapps.lang_pref.api import footer_language_selector_is_enabled
+%>
+<% footer = get_footer(is_secure=is_secure) %>
+<% icp_license_info = getattr(settings, 'ICP_LICENSE_INFO', {}) %>
+<%namespace name='static' file='static_content.html'/>
+
+<div class="wrapper wrapper-footer">
+  <footer id="footer-openedx" class="amp-footer"
+    % if bidi:
+      dir=${bidi}
+    % endif
+  >
+    <div class="amp-footer-inner">
+
+      <div class="amp-footer-brand">
+        <a href="/" class="amp-footer-logo-link" aria-label="${_("{platform_name} Home").format(platform_name=settings.PLATFORM_NAME)}">
+          <img src="${static.url('images/logo-white.png')}" alt="${settings.PLATFORM_NAME}" class="amp-footer-logo" />
+        </a>
+        <p class="amp-footer-tagline">${_("Expert-led learning for electrical professionals.")}</p>
+        % if not hide_openedx_link:
+          <div class="amp-footer-powered">
+            <span>${_("Powered by")}</span>
+            <a href="${footer['openedx_link']['url']}" rel="noopener" target="_blank" class="amp-footer-openedx-link">
+              <img src="${static.url('images/openedx-logo.png')}" alt="${footer['openedx_link']['title']}" width="70" />
+            </a>
+          </div>
+        % endif
+      </div>
+
+      <nav class="amp-footer-nav" aria-label="${_('Footer navigation')}">
+        <div class="amp-footer-nav-group">
+          <h3 class="amp-footer-nav-heading">${_("Platform")}</h3>
+          <ul>
+            <li><a href="/courses">${_("Browse Courses")}</a></li>
+            <li><a href="/dashboard">${_("My Learning")}</a></li>
+            <li><a href="/about">${_("About Us")}</a></li>
+          </ul>
+        </div>
+        <div class="amp-footer-nav-group">
+          <h3 class="amp-footer-nav-heading">${_("Support")}</h3>
+          <ul>
+            <li><a href="/help">${_("Help Center")}</a></li>
+            <li><a href="/contact">${_("Contact Us")}</a></li>
+            <li><a href="mailto:${settings.CONTACT_EMAIL | n}">${settings.CONTACT_EMAIL | n}</a></li>
+          </ul>
+        </div>
+        <div class="amp-footer-nav-group">
+          <h3 class="amp-footer-nav-heading">${_("Legal")}</h3>
+          <ul>
+            <li><a href="/tos">${_("Terms of Service")}</a></li>
+            <li><a href="/privacy">${_("Privacy Policy")}</a></li>
+            <li><a href="/honor">${_("Honor Code")}</a></li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="amp-footer-bottom">
+      <p class="amp-footer-copyright">
+        &copy; ${datetime.now().year} ${settings.PLATFORM_NAME}. ${_("All rights reserved.")}
+        % if icp_license_info.get('icp_license'):
+          &nbsp;|&nbsp;${icp_license_info.get('text', '')}
+          <a href="${icp_license_info.get('icp_license_link', '#')}">${icp_license_info.get('icp_license')}</a>
+        % endif
+      </p>
+      % if context.get('include_language_selector', footer_language_selector_is_enabled()):
+        <%include file="${static.get_template_path('widgets/footer-language-selector.html')}"/>
+      % endif
+    </div>
+
+  </footer>
+</div>
+
+% if include_dependencies:
+  <%static:js group='base_vendor'/>
+  <%static:css group='style-vendor'/>
+  <%include file="widgets/segment-io.html" />
+  <%include file="widgets/segment-io-footer.html" />
+% endif
+% if footer_css_urls:
+  % for url in footer_css_urls:
+    <link rel="stylesheet" type="text/css" href="${url}">
+  % endfor
+% endif

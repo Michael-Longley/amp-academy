@@ -1,0 +1,12 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+from django.utils.translation import gettext as _
+%>
+
+<header class="amp-dashboard-section-header">
+  <div class="amp-dashboard-section-title">
+    <h2 class="amp-dashboard-heading">${_("My Courses")}</h2>
+    <p class="amp-dashboard-subheading">${_("Continue where you left off")}</p>
+  </div>
+</header>

@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+{% load i18n static %}
+
+{% block title %}{% block portal_title %}Sponsorship Portal{% endblock %} — {{ settings.PLATFORM_NAME }}{% endblock %}
+
+{% block headextra %}
+  <link rel="stylesheet" href="{% static 'student_sponsorship/sponsorship.css' %}">
+  {% block portal_headextra %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+  <main class="container sp-portal-main">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb sp-portal-breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'sponsorship:portal_home' %}">Home</a></li>
+        {% block breadcrumb %}{% endblock %}
+      </ol>
+    </nav>
+
+    <div class="border-bottom mb-4 pb-2">
+      <h1 class="h3 mb-0">{% block page_heading %}{% endblock %}</h1>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% block portal_content %}{% endblock %}
+  </main>
+{% endblock %}

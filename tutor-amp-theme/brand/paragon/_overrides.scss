@@ -1,0 +1,55 @@
+// Amp Academy — Paragon Component Overrides
+// Only rules that can't be expressed as SCSS variables above.
+// Keep this file minimal — Paragon class names change across major versions.
+
+// ── App header / navbar ───────────────────────────────────────────────────────
+.pgn__app-header {
+  background-color: var(--pgn-color-accent-a-base, #24292E);  // Slate — matches AMP_THEME_NAVBAR_BG
+
+  .nav-link,
+  .dropdown-toggle,
+  .btn-tertiary {
+    color: #fff !important;
+
+    &:hover,
+    &:focus {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+  }
+
+  .pgn__app-header__menu-trigger {
+    color: #fff;
+  }
+}
+
+// ── Hero / marketing banner ───────────────────────────────────────────────────
+.pgn__hero,
+.pgn__banner {
+  background-color: var(--pgn-color-accent-a-base, #24292E);  // Slate
+  color: #fff;
+
+  h1, h2, h3, .pgn__hero-title {
+    color: #fff;
+  }
+}
+
+// ── Course card accent ────────────────────────────────────────────────────────
+.pgn__card-header-image {
+  border-top: 3px solid var(--pgn-color-primary-base, #FFB100);  // Amber
+}
+
+// ── Badge brand ───────────────────────────────────────────────────────────────
+.pgn__badge-brand {
+  background-color: var(--pgn-color-primary-base, #FFB100);  // Amber
+  color: #24292E;
+}
+
+// ── Progress bar ──────────────────────────────────────────────────────────────
+.pgn__progress .progress-bar {
+  background-color: var(--pgn-color-primary-base, #FFB100);  // Amber
+}
+
+// ── Hyperlinks inside course content ─────────────────────────────────────────
+.pgn__hyperlink {
+  color: #2980B9;  // Confirm Blue — matches AMP_THEME_LINK_COLOR; no Paragon token for link color
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@amp-academy/brand",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Amp Academy brand package for Open edX Paragon MFEs",
+  "scripts": {
+    "build": "paragon build-tokens --source paragon/tokens --build-dir paragon/build -t light --exclude-core",
+    "build:watch": "nodemon --watch paragon/tokens --ext json -x \"npm run build\"",
+    "preview": "npm run build && python -m http.server 9090"
+  },
+  "devDependencies": {
+    "@openedx/paragon": "^23.0.0",
+    "nodemon": "^3.0.0"
+  }
+}

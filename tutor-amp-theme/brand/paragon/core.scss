@@ -1,0 +1,7 @@
+// Amp Academy — Brand compile-time entry point
+// MFEs that consume this package at compile time import this file.
+// Import order matters: fonts and variables must precede Paragon's core imports.
+
+@import 'fonts';
+@import 'variables';
+@import 'overrides';

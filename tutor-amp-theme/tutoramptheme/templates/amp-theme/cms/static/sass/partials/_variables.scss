@@ -1,0 +1,32 @@
+// ── Amp Academy — CMS/Studio Variable Overrides ──────────────────────────────
+// Rendered by Tutor Jinja2 before SCSS compilation.
+// Keeps Studio visually consistent with the LMS brand.
+
+// ── Brand colors ─────────────────────────────────────────────────────────────
+$primary:            {{ AMP_THEME_PRIMARY_COLOR }};
+$secondary:          {{ AMP_THEME_SECONDARY_COLOR }};
+$info:               {{ AMP_THEME_CONFIRM_COLOR }};
+$link-color:         {{ AMP_THEME_LINK_COLOR }};
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+$body-color:         {{ AMP_THEME_TEXT_COLOR }};
+$body-bg:            {{ AMP_THEME_BG_COLOR }};
+
+// ── Typography ────────────────────────────────────────────────────────────────
+$font-family-sans-serif: {{ AMP_THEME_FONT_FAMILY }};
+
+// ── Studio toolbar ────────────────────────────────────────────────────────────
+$toolbar-bg:         {{ AMP_THEME_NAVBAR_BG }};
+$header-bg:          {{ AMP_THEME_NAVBAR_BG }};
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+$btn-border-radius:  4px;
+$btn-font-weight:    600;
+
+// ── Borders ───────────────────────────────────────────────────────────────────
+$border-radius:      6px;
+$border-color:       #d0d7de;
+
+// ── Studio accent (publish button, save indicators) ──────────────────────────
+$action-primary-bg:  {{ AMP_THEME_ACCENT_COLOR }};
+$danger:             {{ AMP_THEME_NOTICE_COLOR }};

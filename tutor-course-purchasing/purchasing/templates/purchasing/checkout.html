@@ -1,0 +1,121 @@
+{% extends "purchasing/base.html" %}
+{% load i18n %}
+
+{% block purchasing_title %}Checkout{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'purchasing:cart' %}">Cart</a></li>
+  <li class="breadcrumb-item active">Checkout</li>
+{% endblock %}
+{% block page_heading %}Order Summary{% endblock %}
+
+{% block purchasing_content %}
+
+<div class="row">
+
+  {# ── Left column: per-course price breakdown ───────────────────────────── #}
+  <div class="col-lg-7">
+    {% for item in checkout_items %}
+    <div class="mb-4">
+      <h6 class="font-weight-bold mb-1">
+        {{ item.course_name }}
+        <span class="text-muted font-weight-normal small ml-1">({{ item.order_type_label }})</span>
+      </h6>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for li in item.line_items %}
+          <tr>
+            <td class="{% if li.type != 'base' %}text-success{% endif %}">
+              {{ li.label }}
+            </td>
+            <td class="text-right {% if li.type != 'base' %}text-success font-weight-bold{% endif %}">
+              {{ li.display }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="border-top font-weight-bold">
+            <td>Your price</td>
+            <td class="text-right">
+              {% if item.final_price == 0 %}
+                <span class="text-success">Free</span>
+              {% else %}
+                {{ item.final_price_display }}
+              {% endif %}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% endfor %}
+
+    {% if checkout_items|length > 1 %}
+    <div class="border-top pt-3 font-weight-bold">
+      Total:
+      {% if is_free %}
+        <span class="text-success">Free</span>
+      {% else %}
+        {{ grand_total_display }}
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  {# ── Right column: action card ─────────────────────────────────────────── #}
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body">
+
+        {% if is_free %}
+          {# === FREE PATH: no payment details, ever === #}
+          <h5 class="card-title">Confirm Your Enrollment</h5>
+          <p class="text-muted small mb-3">
+            {% if checkout_items|length == 1 and checkout_items.0.line_items|length > 1 %}
+              Your sponsorship covers the full cost — no payment details required.
+            {% else %}
+              This course is free — no payment details required.
+            {% endif %}
+          </p>
+          <form method="post" action="{% url 'purchasing:checkout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-block">
+              ✓ Confirm Free Enrollment
+            </button>
+          </form>
+
+        {% elif is_stub %}
+          {# === TEST MODE: paid course, stub processor === #}
+          <h5 class="card-title">Complete Purchase</h5>
+          <div class="alert alert-info small" role="alert">
+            <strong>Test mode:</strong> No payment will be charged. Clicking Confirm will enroll you immediately.
+          </div>
+          <form method="post" action="{% url 'purchasing:checkout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block mt-2">
+              Confirm Order (Test)
+            </button>
+          </form>
+
+        {% else %}
+          {# === PAID PATH: real processor === #}
+          <h5 class="card-title">Payment</h5>
+          {# Stripe Elements or other processor UI injected here #}
+          <p class="text-muted small">You will be redirected to our secure payment page.</p>
+          <form method="post" action="{% url 'purchasing:checkout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block mt-2">
+              Pay {{ grand_total_display }}
+            </button>
+          </form>
+        {% endif %}
+
+        <a href="{% url 'purchasing:cart' %}" class="btn btn-link btn-block btn-sm text-muted mt-1">
+          ← Back to Cart
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

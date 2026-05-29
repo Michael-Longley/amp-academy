@@ -1,0 +1,40 @@
+{% extends "student_sponsorship/base.html" %}
+
+{% block portal_title %}Add Teacher — {{ institution.name }}{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:student_list' institution_slug=institution.slug %}">{{ institution.name }}</a>
+  </li>
+  <li class="breadcrumb-item">
+    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}">Teachers</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">Add</li>
+{% endblock %}
+{% block page_heading %}Add Teacher{% endblock %}
+
+{% block portal_content %}
+<div style="max-width: 480px;">
+  <p class="text-muted mb-4">
+    Enter the email of an existing Amp Academy account.
+    Teachers get read-only access to their assigned students' progress.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="font-weight-bold">{{ form.email.label }}</label>
+      {{ form.email }}
+      {% if form.email.help_text %}
+        <small class="form-text text-muted">{{ form.email.help_text }}</small>
+      {% endif %}
+      {% if form.email.errors %}
+        <div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>
+      {% endif %}
+    </div>
+    <div class="d-flex flex-wrap" style="gap: 0.5rem; margin-top: 1.5rem;">
+      <button type="submit" class="btn btn-primary">Add Teacher</button>
+      <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "purchasing/base.html" %}
+{% load i18n %}
+
+{% block purchasing_title %}My Orders{% endblock %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">My Orders</li>
+{% endblock %}
+{% block page_heading %}My Orders &amp; Subscriptions{% endblock %}
+
+{% block purchasing_content %}
+
+{# Subscriptions #}
+{% if subscriptions %}
+<h2 class="h5 mb-3">Active Subscriptions</h2>
+<div class="table-responsive mb-5">
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Course</th>
+        <th>Status</th>
+        <th>Renews / Expires</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sub in subscriptions %}
+      <tr>
+        <td class="font-weight-bold">{{ sub.course_id }}</td>
+        <td>
+          {% if sub.status == "active" %}
+            <span class="badge badge-success">Active</span>
+          {% elif sub.status == "grace_period" %}
+            <span class="badge badge-warning">Grace period</span>
+          {% elif sub.status == "past_due" %}
+            <span class="badge badge-danger">Past due</span>
+          {% elif sub.status == "cancelled" %}
+            <span class="badge badge-secondary">Cancelled</span>
+          {% else %}
+            <span class="badge badge-light">{{ sub.get_status_display }}</span>
+          {% endif %}
+        </td>
+        <td>{{ sub.current_period_end|date:"M j, Y" }}</td>
+        <td class="text-right">
+          {% if sub.status == "active" or sub.status == "past_due" or sub.status == "grace_period" %}
+            <form method="post" action="{% url 'purchasing:subscription_cancel' sub.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm"
+                onclick="return confirm('Cancel this subscription? You will lose access at the end of the current period.')">
+                Cancel
+              </button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{# Order history #}
+<h2 class="h5 mb-3">Order History</h2>
+{% if orders %}
+<div class="table-responsive">
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Date</th>
+        <th>Course</th>
+        <th>Type</th>
+        <th class="text-right">Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td class="text-muted small">{{ order.created_at|date:"M j, Y" }}</td>
+        <td>{{ order.course_id }}</td>
+        <td>{{ order.get_order_type_display }}</td>
+        <td class="text-right">${{ order.amount_usd }}</td>
+        <td>
+          {% if order.status == "complete" %}
+            <span class="badge badge-success">{{ order.get_status_display }}</span>
+          {% elif order.status == "refunded" %}
+            <span class="badge badge-secondary">{{ order.get_status_display }}</span>
+          {% elif order.status == "failed" %}
+            <span class="badge badge-danger">{{ order.get_status_display }}</span>
+          {% else %}
+            <span class="badge badge-light">{{ order.get_status_display }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">No orders yet. <a href="{% url 'purchasing:catalog' %}">Browse courses</a></p>
+{% endif %}
+{% endblock %}

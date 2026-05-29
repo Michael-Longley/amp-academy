@@ -1,0 +1,19 @@
+{
+  "color": {
+    "primary": {
+      "base": { "$value": "#FFB100", "$type": "color" },
+      "hover": { "$value": "#CC8D00", "$type": "color" },
+      "active": { "$value": "#996A00", "$type": "color" },
+      "focus": { "$value": "#FFC133", "$type": "color" }
+    },
+    "brand": {
+      "base": { "$value": "#FFB100", "$type": "color" },
+      "hover": { "$value": "#CC8D00", "$type": "color" },
+      "active": { "$value": "#996A00", "$type": "color" }
+    },
+    "accent-a": {
+      "base": { "$value": "#24292E", "$type": "color" },
+      "hover": { "$value": "#3D4348", "$type": "color" }
+    }
+  }
+}
