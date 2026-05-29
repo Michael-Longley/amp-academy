@@ -118,8 +118,8 @@ build:
 # ── DATABASE ──────────────────────────────────────────────────────────────────
 
 migrate:
-	$(TUTOR) local run lms python manage.py lms migrate purchasing
-	$(TUTOR) local run lms python manage.py lms migrate student_sponsorship
+	$(TUTOR) local dc exec -T lms python manage.py lms migrate purchasing
+	$(TUTOR) local dc exec -T lms python manage.py lms migrate student_sponsorship
 	@echo "✓ Migrations applied."
 
 # ── HEALTH CHECK ─────────────────────────────────────────────────────────────
