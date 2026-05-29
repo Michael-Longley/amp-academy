@@ -95,10 +95,12 @@ restart: stop start
 # Quick reinstall from the latest git commit — no Docker image rebuild needed.
 # Safe to run on the production server. Causes ~30 s of container cycling.
 update:
-	@echo "→ Reinstalling plugins from git..."
-	$(TUTOR) local run lms pip install --force-reinstall \
-		'$(PURCHASING_PKG)' \
-		'$(SPONSORSHIP_PKG)'
+	@echo "→ Reinstalling plugins in running containers..."
+	@for c in $(PLUGIN_CONTAINERS); do \
+		$(TUTOR) local dc exec -T $$c pip install --force-reinstall \
+			'$(PURCHASING_PKG)' \
+			'$(SPONSORSHIP_PKG)'; \
+	done
 	@echo "→ Restarting containers..."
 	$(TUTOR) local dc restart $(PLUGIN_CONTAINERS)
 	@echo "✓ Plugins updated. Running migrations next is recommended: make migrate"
