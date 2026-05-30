@@ -21,4 +21,4 @@ where = ["."]
 include = ["tutorstudensponsorship*", "student_sponsorship*"]
 
 [tool.setuptools.package-data]
-student_sponsorship = ["templates/**/*"]
+student_sponsorship = ["templates/**/*", "static/**/*"]
