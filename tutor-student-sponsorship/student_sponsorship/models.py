@@ -84,6 +84,15 @@ class InstitutionManager(models.Model):
     def is_teacher(self):
         return self.role == self.ROLE_TEACHER
 
+    @property
+    def display_name(self):
+        try:
+            from common.djangoapps.student.models import UserProfile
+            name = UserProfile.objects.get(user=self.user).name
+            return name or self.user.username
+        except Exception:
+            return self.user.get_full_name() or self.user.username
+
 
 class Sponsorship(models.Model):
     STATUS_ACTIVE    = "active"
@@ -147,6 +156,17 @@ class Sponsorship(models.Model):
 
     def __str__(self):
         return f"{self.invited_email} @ {self.institution} [{self.status}]"
+
+    @property
+    def student_display_name(self):
+        if not self.student:
+            return None
+        try:
+            from common.djangoapps.student.models import UserProfile
+            name = UserProfile.objects.get(user=self.student).name
+            return name or self.student.username
+        except Exception:
+            return self.student.get_full_name() or self.student.username
 
     @property
     def is_accessible(self):

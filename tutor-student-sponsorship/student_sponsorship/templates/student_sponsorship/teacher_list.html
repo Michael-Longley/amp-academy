@@ -34,7 +34,7 @@
       {% for teacher in teachers %}
       <tr>
         <td>{{ teacher.user.email }}</td>
-        <td>{{ teacher.user.get_full_name|default:"—" }}</td>
+        <td>{{ teacher.display_name }}</td>
         <td>{{ teacher.student_assignments.count }}</td>
         <td>
           <a href="{% url 'sponsorship:teacher_assign' institution_slug=institution.slug teacher_pk=teacher.pk %}"

@@ -24,7 +24,7 @@
           <dt class="col-5 text-muted font-weight-normal">Name</dt>
           <dd class="col-7">
             {% if sponsorship.student %}
-              {{ sponsorship.student.get_full_name|default:"—" }}
+              {{ sponsorship.student_display_name|default:"—" }}
             {% else %}
               <em class="text-muted">Not registered</em>
             {% endif %}

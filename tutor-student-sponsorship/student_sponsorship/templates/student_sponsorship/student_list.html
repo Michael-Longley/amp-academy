@@ -55,7 +55,7 @@
         <td>{{ s.invited_email }}</td>
         <td>
           {% if s.student %}
-            {{ s.student.get_full_name|default:s.student.username }}
+            {{ s.student_display_name }}
           {% else %}
             <em class="text-muted">Not registered</em>
           {% endif %}

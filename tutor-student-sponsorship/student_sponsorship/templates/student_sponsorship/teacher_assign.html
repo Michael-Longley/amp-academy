@@ -40,7 +40,7 @@
           </td>
           <td>{{ s.invited_email }}</td>
           <td>
-            {% if s.student %}{{ s.student.get_full_name|default:s.student.username }}{% else %}—{% endif %}
+            {% if s.student %}{{ s.student_display_name }}{% else %}—{% endif %}
           </td>
           <td><span class="sp-badge sp-badge--{{ s.status }}">{{ s.get_status_display }}</span></td>
         </tr>

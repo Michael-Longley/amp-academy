@@ -47,6 +47,31 @@
   padding-right: 1.5rem;
 }
 
+/* ── Tables ────────────────────────────────────────────────────────────────── */
+.sp-portal-main .table th,
+.sp-portal-main .table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+}
+
+.sp-portal-main .table thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.sp-portal-main .table th:nth-child(n+3),
+.sp-portal-main .table td:nth-child(n+3) {
+  text-align: center;
+}
+
+.sp-portal-main .table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
 /* ── Breadcrumb ────────────────────────────────────────────────────────────── */
 .sp-portal-breadcrumb.breadcrumb {
   background: transparent;
