@@ -167,10 +167,10 @@
   transition: background 0.15s, color 0.15s;
   cursor: pointer;
 }
-.sp-btn-outline-primary  { border: 1.5px solid #0069d9; color: #0069d9; }
+.sp-btn-outline-primary  { border: 1.5px solid #0075b4; color: #0075b4; }
 .sp-btn-outline-secondary { border: 1.5px solid #6c757d; color: #6c757d; }
-.sp-btn-outline-primary:hover  { background: #0069d9; color: #fff; text-decoration: none; }
-.sp-btn-outline-secondary:hover { background: #6c757d; color: #fff; text-decoration: none; }
+.sp-btn-outline-primary:hover  { background: #0075b4; border-color: #0075b4; color: #fff !important; text-decoration: none; }
+.sp-btn-outline-secondary:hover { background: #6c757d; color: #fff !important; text-decoration: none; }
 
 /* ── Breadcrumb ────────────────────────────────────────────────────────────── */
 .sp-portal-breadcrumb.breadcrumb {
