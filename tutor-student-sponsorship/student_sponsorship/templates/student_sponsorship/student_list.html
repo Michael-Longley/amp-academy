@@ -9,28 +9,27 @@
 {% block portal_content %}
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 0.75rem;">
   <div class="d-flex flex-wrap align-items-center" style="gap: 0.5rem;">
-    <span class="small text-muted">Filter:</span>
-    {% for val, label in status_choices %}
-      <a href="?status={{ val }}"
-         class="btn btn-sm {% if status_filter == val %}btn-primary{% else %}btn-outline-secondary{% endif %}">
-        {{ label }}
-      </a>
-    {% endfor %}
-    {% if status_filter %}
-      <a href="?" class="btn btn-sm btn-outline-secondary">Clear</a>
-    {% endif %}
+    <div class="sp-filter-group">
+      <a href="?" class="sp-filter-item {% if not status_filter %}sp-filter-item--active{% endif %}">All</a>
+      {% for val, label in status_choices %}
+        <a href="?status={{ val }}"
+           class="sp-filter-item {% if status_filter == val %}sp-filter-item--active{% endif %}">
+          {{ label }}
+        </a>
+      {% endfor %}
+    </div>
   </div>
 
   {% if not manager or manager.is_admin %}
   <div class="d-flex flex-wrap" style="gap: 0.5rem;">
     <a href="{% url 'sponsorship:student_add' institution_slug=institution.slug %}" class="btn btn-primary btn-sm">
-      + Add Student
+      <i class="fa fa-plus" aria-hidden="true"></i> Add Student
     </a>
-    <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}" class="btn btn-outline-secondary btn-sm">
-      View Courses
+    <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}" class="sp-btn-outline-primary btn-sm">
+      <i class="fa fa-book" aria-hidden="true"></i> View Courses
     </a>
-    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="btn btn-outline-secondary btn-sm">
-      Manage Teachers
+    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="sp-btn-outline-primary">
+      <i class="fa fa-users" aria-hidden="true"></i> Manage Teachers
     </a>
   </div>
   {% endif %}
@@ -64,15 +63,21 @@
         <td>{{ s.sponsor_start }}</td>
         <td>{{ s.grace_end|default:"—" }}</td>
         <td>
-          <div class="d-flex flex-wrap" style="gap: 0.35rem;">
+          <div class="d-flex align-items-center" style="gap: 0.3rem;">
             <a href="{% url 'sponsorship:student_detail' institution_slug=institution.slug pk=s.pk %}"
-               class="btn btn-sm btn-outline-secondary">View</a>
+               class="sp-icon-btn sp-icon-btn--view" title="View student">
+              <i class="fa fa-eye" aria-hidden="true" style="color: #28a745;"></i>
+            </a>
             {% if not manager or manager.is_admin %}
               {% if s.status in 'active,pending' %}
                 <a href="{% url 'sponsorship:student_edit' institution_slug=institution.slug pk=s.pk %}"
-                   class="btn btn-sm btn-outline-secondary">Edit</a>
+                   class="sp-icon-btn sp-icon-btn--edit" title="Edit student">
+                  <i class="fa fa-pencil" aria-hidden="true" style="color: #d4880a;"></i>
+                </a>
                 <a href="{% url 'sponsorship:student_remove' institution_slug=institution.slug pk=s.pk %}"
-                   class="btn btn-sm btn-outline-danger">Remove</a>
+                   class="sp-icon-btn sp-icon-btn--danger" title="Remove student">
+                  <i class="fa fa-trash" aria-hidden="true" style="color: #dc3545;"></i>
+                </a>
               {% endif %}
             {% endif %}
           </div>

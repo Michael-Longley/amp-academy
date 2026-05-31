@@ -17,7 +17,9 @@
   </p>
   {% if not manager or manager.is_admin %}
   <a href="{% url 'sponsorship:course_add' institution_slug=institution.slug %}"
-     class="btn btn-primary btn-sm ms-3 flex-shrink-0">+ Add Course</a>
+     class="btn btn-primary btn-sm ms-3 flex-shrink-0">
+    <i class="fa fa-plus" aria-hidden="true"></i> Add Course
+  </a>
   {% endif %}
 </div>
 
@@ -50,15 +52,21 @@
         <td>
           <a href="/courses/{{ c.course_id }}/course/"
              target="_blank" rel="noopener"
-             class="btn btn-sm btn-outline-secondary">Open ↗</a>
+             class="sp-icon-btn" title="Open in Open edX">
+            <i class="fa fa-external-link" aria-hidden="true"></i>
+          </a>
         </td>
         {% if not manager or manager.is_admin %}
         <td>
-          <div class="d-flex" style="gap: 0.35rem;">
+          <div class="d-flex align-items-center" style="gap: 0.3rem;">
             <a href="{% url 'sponsorship:course_edit' institution_slug=institution.slug pk=c.pk %}"
-               class="btn btn-sm btn-outline-secondary">Edit</a>
+               class="sp-icon-btn sp-icon-btn--edit" title="Edit course">
+              <i class="fa fa-pencil" aria-hidden="true" style="color: #d4880a;"></i>
+            </a>
             <a href="{% url 'sponsorship:course_remove' institution_slug=institution.slug pk=c.pk %}"
-               class="btn btn-sm btn-outline-danger">Remove</a>
+               class="sp-icon-btn sp-icon-btn--danger" title="Remove course">
+              <i class="fa fa-trash" aria-hidden="true" style="color: #dc3545;"></i>
+            </a>
           </div>
         </td>
         {% endif %}
