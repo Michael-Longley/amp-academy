@@ -9,13 +9,10 @@
 {% block portal_content %}
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 0.75rem;">
   <div class="d-flex flex-wrap align-items-center" style="gap: 0.5rem;">
-    <div class="sp-filter-group">
-      <a href="?" class="sp-filter-item {% if not status_filter %}sp-filter-item--active{% endif %}">All</a>
+    <div class="sp-filter-group" id="sp-filter-group">
+      <a href="#" class="sp-filter-item sp-filter-item--active" data-filter="">All</a>
       {% for val, label in status_choices %}
-        <a href="?status={{ val }}"
-           class="sp-filter-item {% if status_filter == val %}sp-filter-item--active{% endif %}">
-          {{ label }}
-        </a>
+        <a href="#" class="sp-filter-item" data-filter="{{ val }}">{{ label }}</a>
       {% endfor %}
     </div>
   </div>
@@ -48,9 +45,9 @@
         <th>Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="sp-student-tbody">
       {% for s in sponsorships %}
-      <tr>
+      <tr data-status="{{ s.status }}">
         <td>{{ s.invited_email }}</td>
         <td>
           {% if s.student %}
@@ -87,7 +84,129 @@
     </tbody>
   </table>
 </div>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mt-2" style="gap: 0.5rem;">
+  <div class="d-flex align-items-center" style="gap: 0.5rem;">
+    <span class="sp-filter-label">Per page:</span>
+    <select id="sp-page-size" class="form-control form-control-sm" style="width: auto;">
+      <option value="10">10</option>
+      <option value="25" selected>25</option>
+      <option value="50">50</option>
+    </select>
+    <span id="sp-count-label" class="text-muted" style="font-size: 0.85rem;"></span>
+  </div>
+  <nav id="sp-pagination" aria-label="Student pagination"></nav>
+</div>
+
 {% else %}
   <p class="text-muted mt-3">No students found.</p>
+{% endif %}
+
+{% if sponsorships %}
+<script>
+(function () {
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#sp-student-tbody tr'));
+  var filterBtns = Array.prototype.slice.call(document.querySelectorAll('#sp-filter-group .sp-filter-item'));
+  var pageSizeSelect = document.getElementById('sp-page-size');
+  var paginationEl = document.getElementById('sp-pagination');
+  var countLabel = document.getElementById('sp-count-label');
+
+  var currentFilter = '';
+  var pageSize = 25;
+  var currentPage = 1;
+
+  function getFiltered() {
+    if (!currentFilter) return rows;
+    return rows.filter(function (r) { return r.dataset.status === currentFilter; });
+  }
+
+  function render() {
+    var filtered = getFiltered();
+    var total = filtered.length;
+    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    rows.forEach(function (r) { r.style.display = 'none'; });
+    var start = (currentPage - 1) * pageSize;
+    filtered.slice(start, start + pageSize).forEach(function (r) { r.style.display = ''; });
+
+    var end = Math.min(start + pageSize, total);
+    countLabel.textContent = total === 0 ? 'No students' : 'Showing ' + (start + 1) + '–' + end + ' of ' + total;
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      return;
+    }
+
+    var pages = [];
+    var half = 2;
+    var start = Math.max(1, currentPage - half);
+    var end = Math.min(totalPages, currentPage + half);
+    if (start > 1) { pages.push(1); if (start > 2) pages.push('…'); }
+    for (var i = start; i <= end; i++) pages.push(i);
+    if (end < totalPages) { if (end < totalPages - 1) pages.push('…'); pages.push(totalPages); }
+
+    var ul = document.createElement('ul');
+    ul.className = 'pagination pagination-sm mb-0';
+
+    function pageItem(label, page, disabled, active) {
+      var li = document.createElement('li');
+      li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
+      var a = document.createElement('a');
+      a.className = 'page-link';
+      a.href = '#';
+      a.innerHTML = label;
+      if (!disabled) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          currentPage = page;
+          render();
+        });
+      }
+      li.appendChild(a);
+      return li;
+    }
+
+    ul.appendChild(pageItem('&laquo;', currentPage - 1, currentPage === 1, false));
+    pages.forEach(function (p) {
+      if (p === '…') {
+        var li = document.createElement('li');
+        li.className = 'page-item disabled';
+        li.innerHTML = '<span class="page-link">…</span>';
+        ul.appendChild(li);
+      } else {
+        ul.appendChild(pageItem(p, p, false, p === currentPage));
+      }
+    });
+    ul.appendChild(pageItem('&raquo;', currentPage + 1, currentPage === totalPages, false));
+
+    paginationEl.innerHTML = '';
+    paginationEl.appendChild(ul);
+  }
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      filterBtns.forEach(function (b) { b.classList.remove('sp-filter-item--active'); });
+      btn.classList.add('sp-filter-item--active');
+      currentFilter = btn.dataset.filter || '';
+      currentPage = 1;
+      render();
+    });
+  });
+
+  pageSizeSelect.addEventListener('change', function () {
+    pageSize = parseInt(this.value, 10);
+    currentPage = 1;
+    render();
+  });
+
+  render();
+})();
+</script>
 {% endif %}
 {% endblock %}

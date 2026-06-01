@@ -57,14 +57,9 @@ def student_list(request, institution_slug):
         "invited_email"
     )
 
-    status_filter = request.GET.get("status", "")
-    if status_filter:
-        sponsorships = sponsorships.filter(status=status_filter)
-
     return render(request, "student_sponsorship/student_list.html", {
         "institution": institution,
         "sponsorships": sponsorships,
-        "status_filter": status_filter,
         "status_choices": Sponsorship.STATUS_CHOICES,
         "manager": request.institution_manager,
     })
