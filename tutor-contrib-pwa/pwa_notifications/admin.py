@@ -1,6 +1,26 @@
 from django.contrib import admin
 
-from pwa_notifications.models import NotificationLog, NotificationPreference, NotificationType, PushSubscription
+from pwa_notifications.models import NotificationLog, NotificationPreference, NotificationType, PushSubscription, PwaConfig
+
+
+@admin.register(PwaConfig)
+class PwaConfigAdmin(admin.ModelAdmin):
+    fields = ["prompt_title", "prompt_body", "prompt_accept", "prompt_decline"]
+
+    def has_add_permission(self, request):
+        return not PwaConfig.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        # Redirect straight to the edit form — there's only ever one row
+        obj = PwaConfig.load()
+        from django.http import HttpResponseRedirect
+        from django.urls import reverse
+        return HttpResponseRedirect(
+            reverse("admin:pwa_notifications_pwaconfig_change", args=[obj.pk])
+        )
 
 
 @admin.register(NotificationType)

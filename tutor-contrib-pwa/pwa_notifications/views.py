@@ -5,7 +5,18 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from pwa_notifications.models import NotificationPreference, NotificationType, PushSubscription
+from pwa_notifications.models import NotificationPreference, NotificationType, PushSubscription, PwaConfig
+
+
+@require_http_methods(["GET"])
+def pwa_config(request):
+    cfg = PwaConfig.load()
+    return JsonResponse({
+        "prompt_title":   cfg.prompt_title,
+        "prompt_body":    cfg.prompt_body,
+        "prompt_accept":  cfg.prompt_accept,
+        "prompt_decline": cfg.prompt_decline,
+    })
 
 
 @login_required
