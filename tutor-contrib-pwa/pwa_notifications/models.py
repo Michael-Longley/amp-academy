@@ -8,7 +8,7 @@ class PushSubscription(models.Model):
         on_delete=models.CASCADE,
         related_name="pwa_subscriptions",
     )
-    endpoint = models.TextField(unique=True)
+    endpoint = models.CharField(max_length=512, unique=True)
     p256dh = models.TextField()
     auth = models.TextField()
     user_agent = models.CharField(max_length=512, blank=True)
@@ -93,3 +93,27 @@ class NotificationLog(models.Model):
 
     def __str__(self):
         return f"NotificationLog(user={self.user_id}, status={self.delivery_status})"
+
+
+class PwaConfig(models.Model):
+    """Singleton — always pk=1. Edit copy for the notification pre-prompt in Django admin."""
+    prompt_title   = models.CharField(max_length=120, default="Stay in the loop")
+    prompt_body    = models.TextField(default="Get notified about grades, upcoming assignments, and course announcements. You can turn these off anytime.")
+    prompt_accept  = models.CharField(max_length=60, default="Turn on notifications")
+    prompt_decline = models.CharField(max_length=60, default="Not now")
+
+    class Meta:
+        verbose_name = "PWA notification prompt"
+        verbose_name_plural = "PWA notification prompt"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return "PWA notification prompt"
