@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're offline — {{ PWA_APP_NAME or PLATFORM_NAME }}</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #f5f5f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #fff; border-radius: 8px; padding: 40px 32px; max-width: 400px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    h1 { font-size: 1.4rem; margin: 0 0 12px; color: #222; }
+    p  { color: #555; line-height: 1.5; margin: 0 0 24px; }
+    a  { display: inline-block; padding: 10px 24px; background: {{ PWA_THEME_COLOR }}; color: #fff; border-radius: 6px; text-decoration: none; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>You're offline</h1>
+    <p>It looks like you've lost your internet connection. Check your connection and try again — any courses you've visited recently may still be available.</p>
+    <a href="javascript:window.location.reload()">Try again</a>
+  </div>
+</body>
+</html>
