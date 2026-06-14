@@ -70,10 +70,8 @@ hooks.Filters.ENV_TEMPLATE_TARGETS.add_items([
 # ── 4. Install Python push dependencies into LMS image ───────────────────────
 hooks.Filters.ENV_PATCHES.add_item((
     "openedx-dockerfile-post-python-requirements",
-    # TODO: remove @feature/tutor-contrib-pwa branch ref after merging to main
     "RUN pip install "
     "'git+https://github.com/michael-longley/amp-academy.git"
-    "@feature/tutor-contrib-pwa"
     "#subdirectory=tutor-contrib-pwa' "
     "pywebpush>=2.0.0 "
     "py-vapid>=1.9.0",
