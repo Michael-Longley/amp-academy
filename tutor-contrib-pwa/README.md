@@ -4,9 +4,9 @@ PWA capabilities for Open edX on Tutor — home-screen installability, offline c
 
 ## Features
 
-- **Installable PWA** — Android and iOS (16.4+) home-screen install prompt, mobile-only
-- **Service worker** — app-shell cache-first, course content network-first, offline fallback page
-- **Push notification bus** — any Tutor plugin can register types and deliver push messages to students
+- **Installable PWA** — Android and iOS (16.4+) home-screen install prompt, mobile-only, with two-tier dismissal
+- **Service worker** — app-shell cache-first, course content network-first, branded offline fallback page
+- **Push notification bus** — any Tutor plugin can register types and deliver push messages to students; prompt fires automatically after install
 - **No new infrastructure** — runs inside the existing MFE (Caddy) and LMS containers
 
 ## Requirements
@@ -15,95 +15,172 @@ PWA capabilities for Open edX on Tutor — home-screen installability, offline c
 - **HTTPS is required** — service workers and push notifications are blocked by all browsers on plain HTTP. `ENABLE_HTTPS: true` must be set before this plugin is useful in production.
 - A deployed, reachable LMS hostname
 
-> **Local development:** HTTPS is not available on `apps.local.openedx.io`. Work around this during development by going to `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, adding `http://apps.local.openedx.io`, and relaunching Chrome. The manifest and install prompt work on HTTP; only the service worker and push require this flag locally.
-
 ---
 
-## Install (two steps)
+## Production deploy
 
-### Step 1 — MFE (installability + offline + install prompt)
+### 1. Install the plugin
 
 ```bash
-pip install tutor-contrib-pwa
+pip install "git+https://github.com/michael-longley/amp-academy.git#subdirectory=tutor-contrib-pwa"
 tutor plugins enable pwa
-tutor config save          # generates VAPID keys on first run
-tutor images build mfe     # bakes manifest.json, sw.js, icons, and offline.html into the image
-tutor local stop mfe && tutor local start --detach mfe   # recreate container (restart alone won't apply a new image)
 ```
 
-After this, the PWA manifest is served at `/manifest.json`, the service worker at `/sw.js`, and the mobile install prompt appears on first visit.
+### 2. Set branding and contact configuration
 
-### Step 2 — LMS (push notification delivery)
-
-Push notifications require the `pwa_notifications` Django app to be installed in the LMS image. This is a separate, longer build:
-
-```bash
-tutor images build openedx   # installs pwa_notifications into the LMS (~15–20 min)
-tutor local do init          # runs migrations and syncs notification types
-tutor local restart lms
-```
-
-You can skip Step 2 entirely if you only need installability and offline support.
-
----
-
-## Production readiness checklist
-
-Before going live, set these values and rebuild the MFE:
+These values are baked into the MFE image at build time. Set them **before** running `tutor images build mfe`.
 
 ```bash
 tutor config save \
-  --set PWA_ICON_URL="https://cdn.yourschool.edu/app-icon-512.png" \
+  --set PWA_ICON_URL="https://your-cdn.com/app-icon-512.png" \
   --set PWA_SHORT_NAME="YourSchool" \
-  --set PWA_THEME_COLOR="#c0392b"
-
-tutor images build mfe
-tutor local stop mfe && tutor local start --detach mfe
+  --set PWA_THEME_COLOR="#c0392b" \
+  --set PWA_VAPID_CONTACT_EMAIL="ops@your-school.edu"
 ```
 
-| Item | Why it matters |
+| Variable | Required | Notes |
+|---|---|---|
+| `PWA_ICON_URL` | **Yes** | Publicly reachable 512×512 PNG. The bundled placeholder is not production-appropriate. |
+| `PWA_SHORT_NAME` | **Yes** | Label shown under the icon on the home screen. Max 12 characters. |
+| `PWA_THEME_COLOR` | Recommended | Browser toolbar colour when the PWA is installed. Match your brand. |
+| `PWA_VAPID_CONTACT_EMAIL` | Recommended | Shown to push services for abuse contact. Defaults to `admin@<LMS_HOST>`. |
+| `PWA_APP_NAME` | Optional | Full name on the splash screen. Defaults to `PLATFORM_NAME`. |
+| `PWA_BACKGROUND_COLOR` | Optional | Splash screen background. Defaults to `#ffffff`. |
+
+### 3. Generate VAPID keys and back them up
+
+VAPID keys are generated automatically on the first `tutor config save` run after enabling the plugin. They are written once and never overwritten.
+
+```bash
+tutor config save   # keys are generated here if not already present
+```
+
+**Immediately back up the generated keys** — if `config.yml` is lost and keys are regenerated, all existing push subscriptions become invalid and the MFE must be rebuilt.
+
+```bash
+tutor config printvalue PWA_VAPID_PUBLIC_KEY
+tutor config printvalue PWA_VAPID_PRIVATE_KEY
+# Store both values in your secrets manager or deployment documentation.
+```
+
+### 4. Build images
+
+```bash
+# MFE: bakes manifest.json, sw.js, icons, offline.html, and notification JS
+# (includes the VAPID public key — must run after step 3)
+tutor images build mfe
+
+# LMS: installs pwa_notifications Django app, pywebpush, py-vapid
+tutor images build openedx
+```
+
+### 5. Deploy containers
+
+```bash
+tutor local stop
+tutor local start
+tutor local do init   # runs DB migrations and seeds the 5 default notification types
+```
+
+### 6. Configure in Django admin
+
+Navigate to `https://your-lms-host/admin/pwa_notifications/` and complete:
+
+**Notification prompt copy** (`/admin/pwa_notifications/pwaconfig/`):
+Update the title, body, and button text to match your brand voice. This controls what students see before the browser permission dialog. Changes take effect immediately — no rebuild needed.
+
+**Notification types** (`/admin/pwa_notifications/notificationtype/`):
+All 5 types are disabled by default. Enable the ones relevant to your deployment:
+
+| Type | Enable if… |
 |---|---|
-| `PWA_ICON_URL` | The bundled placeholder is not a production brand. Must be a publicly reachable 512×512 PNG. |
-| `PWA_SHORT_NAME` | Shown under the icon on the home screen. Max 12 characters. |
-| `PWA_THEME_COLOR` | Browser toolbar color when the PWA is installed. Match your brand. |
-| HTTPS | Service workers and push are blocked on HTTP. Set `ENABLE_HTTPS: true`. |
+| Enrollment confirmed | You want students to get a confirmation when they enrol |
+| Assignment due in 24 hours | You use Open edX assignment due dates and Celery beat is running |
+| Grade posted | You post graded content |
+| Certificate awarded | You issue certificates |
+| Course announcement | Instructors post regular course updates |
+
+### 7. Verify
+
+```bash
+# Manifest served correctly
+curl -I https://apps.your-lms-host/manifest.json
+# → Content-Type: application/manifest+json
+
+# Service worker served with correct header
+curl -I https://apps.your-lms-host/sw.js
+# → Service-Worker-Allowed: /
+
+# Prompt copy endpoint live
+curl https://your-lms-host/api/pwa/config/
+# → {"prompt_title": "...", "prompt_body": "...", ...}
+```
+
+Test push delivery end-to-end (requires a real push subscription from a browser):
+
+```bash
+tutor local run lms python manage.py lms shell -c "
+from pwa_notifications.tasks import send_push_notification
+send_push_notification.delay(
+    user_id=YOUR_USER_ID,
+    notification_type_id='enrollment.confirmed',
+    title='Test notification',
+    body='Push delivery is working.',
+)
+"
+# Then check: https://your-lms-host/admin/pwa_notifications/notificationlog/
+```
 
 ---
 
 ## Configuration reference
 
-| Variable | Default | Notes |
-|---|---|---|
-| `PWA_APP_NAME` | `PLATFORM_NAME` | Full name on the splash screen |
-| `PWA_SHORT_NAME` | `PLATFORM_NAME[:12]` | Home-screen label, max 12 chars |
-| `PWA_THEME_COLOR` | `#0056d2` | Set to `BRANDING_PRIMARY` if using `tutor-contrib-branding` |
-| `PWA_BACKGROUND_COLOR` | `#ffffff` | Splash screen background |
-| `PWA_ICON_URL` | bundled placeholder | **Set before going live** |
-| `PWA_PUSH_ENABLED` | `true` | Master switch for all push delivery |
-| `PWA_VAPID_CONTACT_EMAIL` | `admin@<LMS_HOST>` | Required by the VAPID spec |
-| `PWA_VAPID_PUBLIC_KEY` | auto-generated | Written once on first `tutor config save` |
-| `PWA_VAPID_PRIVATE_KEY` | auto-generated | Never exposed to the frontend |
-| `PWA_CACHE_VERSION` | `1` | Bump to force service worker cache invalidation |
+All variables use the `PWA_` prefix. Changes that affect the MFE (manifest appearance, theme, VAPID key) require `tutor images build mfe` followed by a container recreate. Changes to `PwaConfig` in Django admin take effect immediately.
 
-Any `PWA_*` change that affects the MFE (manifest, theme, cache version) requires `tutor images build mfe` followed by a container recreate.
+| Variable | Default | Rebuild required | Notes |
+|---|---|---|---|
+| `PWA_APP_NAME` | `PLATFORM_NAME` | Yes | Full name on the splash screen |
+| `PWA_SHORT_NAME` | `PLATFORM_NAME[:12]` | Yes | Home-screen label, max 12 chars |
+| `PWA_THEME_COLOR` | `#0056d2` | Yes | Browser toolbar colour |
+| `PWA_BACKGROUND_COLOR` | `#ffffff` | Yes | Splash screen background |
+| `PWA_ICON_URL` | bundled placeholder | Yes | **Set before going live** — 512×512 PNG |
+| `PWA_VAPID_CONTACT_EMAIL` | `admin@<LMS_HOST>` | Yes | Required by the VAPID spec |
+| `PWA_PUSH_ENABLED` | `true` | Yes | Master switch for all push delivery |
+| `PWA_VAPID_PUBLIC_KEY` | auto-generated | Yes | Written once, never overwritten |
+| `PWA_VAPID_PRIVATE_KEY` | auto-generated | No | Never exposed to the frontend |
+| `PWA_CACHE_VERSION` | `1` | Yes | Bump to force service worker cache invalidation across all clients |
 
 ---
 
-## Enabling push notification types
+## Updating an existing deployment
 
-Notification types are disabled by default. Enable them in Django admin after completing the LMS install:
+After any `PWA_*` config change:
 
+```bash
+tutor config save --set PWA_THEME_COLOR="#003057"   # example
+tutor images build mfe
+tutor local stop mfe && tutor local start --detach mfe
 ```
-https://your-lms-host/admin/pwa_notifications/notificationtype/
-```
 
-Each type has an enabled/disabled toggle. No restarts needed.
+To update the notification prompt copy without a rebuild: edit it directly in Django admin at `/admin/pwa_notifications/pwaconfig/`.
+
+---
+
+## Local development
+
+HTTPS is not available on `apps.local.openedx.io`. Service worker registration requires a secure context. Work around this during development:
+
+1. Go to `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+2. Add `http://apps.local.openedx.io`
+3. Click **Relaunch**
+
+The manifest and install prompt work on HTTP without the flag. The service worker, push subscription, and notification permission prompt require it.
 
 ---
 
 ## Using the push notification bus from another plugin
 
-**Register a type** in your plugin's `plugin.py`:
+**Register a notification type** in your plugin's `plugin.py`:
 
 ```python
 from tutorpwa.hooks import PWA_NOTIFICATION_TYPES
@@ -141,7 +218,7 @@ if _PWA_AVAILABLE:
 
 ## VAPID key rotation
 
-VAPID keys are stored in `$(tutor config printroot)/config.yml` and never overwritten by `tutor config save`. To rotate them intentionally:
+Keys are stored in `$(tutor config printroot)/config.yml` and never overwritten by `tutor config save`. To rotate intentionally (e.g. after a security incident):
 
 ```bash
 # 1. Generate a new linked key pair
@@ -170,8 +247,4 @@ tutor images build mfe
 tutor local stop mfe && tutor local start --detach mfe
 ```
 
----
-
-## What is not yet implemented
-
-- **Browser-side push subscription flow** — the server side (Django app, Celery delivery, VAPID signing) is complete, but there is no JavaScript yet that calls `pushManager.subscribe()` and registers the subscription with the server. Push notifications cannot be delivered until this is built.
+All users will need to re-accept the notification permission prompt on their next visit.
