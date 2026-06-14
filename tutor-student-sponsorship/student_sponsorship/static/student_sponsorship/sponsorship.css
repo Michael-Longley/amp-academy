@@ -72,9 +72,124 @@
   background-color: #f8f9fa;
 }
 
+/* ── Icon action buttons ────────────────────────────────────────────────────── */
+.sp-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  color: #6c757d;
+  font-size: 0.8rem;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.sp-icon-btn:hover { background: #f1f3f5; color: #343a40; border-color: #adb5bd; text-decoration: none; }
+
+.sp-icon-btn--view   { color: #28a745; border-color: #b8dfc4; }
+.sp-icon-btn--view:hover   { background: #f0fff4; color: #1e7e34; border-color: #28a745; text-decoration: none; }
+
+.sp-icon-btn--edit   { color: #d4880a; border-color: #f0d090; }
+.sp-icon-btn--edit:hover   { background: #fffbee; color: #a86800; border-color: #d4880a; text-decoration: none; }
+
+.sp-icon-btn--danger { color: #dc3545; border-color: #f5c6cb; }
+.sp-icon-btn--danger:hover { background: #fff5f5; color: #b02a37; border-color: #dc3545; text-decoration: none; }
+
+/* ── Filter bar ─────────────────────────────────────────────────────────────── */
+.sp-filter-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6c757d;
+  white-space: nowrap;
+}
+.sp-filter-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+}
+.sp-filter-group .sp-filter-item {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  margin-left: -1px;
+  color: #495057;
+  text-decoration: none;
+  background: #fff;
+  white-space: nowrap;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+.sp-filter-group .sp-filter-item:first-child { border-radius: 4px 0 0 4px; margin-left: 0; }
+.sp-filter-group .sp-filter-item:last-child  { border-radius: 0 4px 4px 0; }
+.sp-filter-group .sp-filter-item:hover { background: #f8f9fa; color: #212529; text-decoration: none; z-index: 1; }
+.sp-filter-group .sp-filter-item--active { background: #0069d9; border-color: #0069d9; color: #fff !important; z-index: 1; }
+.sp-filter-group .sp-filter-item--active:hover { background: #0056b3; border-color: #0056b3; color: #fff !important; }
+
+.sp-filter-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.sp-filter-clear:hover { background: #fff5f5; border-color: #dc3545; color: #dc3545; text-decoration: none; }
+
+/* ── Toolbar nav buttons ─────────────────────────────────────────────────────── */
+.sp-btn-outline-primary,
+.sp-btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 38px;
+  padding: 0 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 4px;
+  background: transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.sp-btn-outline-primary  { border: 1.5px solid #0075b4; color: #0075b4; }
+.sp-btn-outline-secondary { border: 1.5px solid #6c757d; color: #6c757d; }
+.sp-btn-outline-primary:hover  { background: #0075b4; border-color: #0075b4; color: #fff !important; text-decoration: none; }
+.sp-btn-outline-secondary:hover { background: #6c757d; color: #fff !important; text-decoration: none; }
+
 /* ── Breadcrumb ────────────────────────────────────────────────────────────── */
 .sp-portal-breadcrumb.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
   background: transparent;
   padding-left: 0;
   padding-right: 0;
+  margin-bottom: 0.5rem;
+}
+
+.sp-portal-breadcrumb .breadcrumb-item + .breadcrumb-item {
+  padding-left: 0.5rem;
+}
+
+.sp-portal-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  padding-right: 0.5rem;
+  color: #6c757d;
 }

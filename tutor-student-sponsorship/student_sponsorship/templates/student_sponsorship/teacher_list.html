@@ -15,7 +15,7 @@
     Teachers have read-only access to their assigned students' progress.
   </p>
   <a href="{% url 'sponsorship:teacher_add' institution_slug=institution.slug %}" class="btn btn-primary btn-sm">
-    + Add Teacher
+    <i class="fa fa-plus" aria-hidden="true"></i> Add Teacher
   </a>
 </div>
 
@@ -38,8 +38,8 @@
         <td>{{ teacher.student_assignments.count }}</td>
         <td>
           <a href="{% url 'sponsorship:teacher_assign' institution_slug=institution.slug teacher_pk=teacher.pk %}"
-             class="btn btn-sm btn-outline-secondary">
-            Assign Students
+             class="sp-icon-btn" title="Assign students">
+            <i class="fa fa-user-plus" aria-hidden="true"></i>
           </a>
         </td>
       </tr>

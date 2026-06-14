@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutor-contrib-pwa"
+version = "0.1.0"
+description = "PWA capabilities (installability, offline, push notifications) for Open edX on Tutor"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "py-vapid>=1.9.0",   # VAPID key generation at `tutor config save` time
+]
+
+[project.optional-dependencies]
+host = ["tutor>=15.0.0"]
+
+[project.entry-points."tutor.plugin.v1"]
+pwa = "tutorpwa.plugin"
+
+[project.entry-points."lms.djangoapp"]
+pwa-notifications = "pwa_notifications.apps:PwaNotificationsConfig"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tutorpwa*", "pwa_notifications*"]
+
+[tool.setuptools.package-data]
+tutorpwa = ["templates/**/*"]
+pwa_notifications = ["templates/**/*", "static/**/*"]

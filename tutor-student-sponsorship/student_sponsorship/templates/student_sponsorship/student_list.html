@@ -9,28 +9,24 @@
 {% block portal_content %}
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 0.75rem;">
   <div class="d-flex flex-wrap align-items-center" style="gap: 0.5rem;">
-    <span class="small text-muted">Filter:</span>
-    {% for val, label in status_choices %}
-      <a href="?status={{ val }}"
-         class="btn btn-sm {% if status_filter == val %}btn-primary{% else %}btn-outline-secondary{% endif %}">
-        {{ label }}
-      </a>
-    {% endfor %}
-    {% if status_filter %}
-      <a href="?" class="btn btn-sm btn-outline-secondary">Clear</a>
-    {% endif %}
+    <div class="sp-filter-group" id="sp-filter-group">
+      <a href="#" class="sp-filter-item sp-filter-item--active" data-filter="">All</a>
+      {% for val, label in status_choices %}
+        <a href="#" class="sp-filter-item" data-filter="{{ val }}">{{ label }}</a>
+      {% endfor %}
+    </div>
   </div>
 
   {% if not manager or manager.is_admin %}
   <div class="d-flex flex-wrap" style="gap: 0.5rem;">
     <a href="{% url 'sponsorship:student_add' institution_slug=institution.slug %}" class="btn btn-primary btn-sm">
-      + Add Student
+      <i class="fa fa-plus" aria-hidden="true"></i> Add Student
     </a>
-    <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}" class="btn btn-outline-secondary btn-sm">
-      View Courses
+    <a href="{% url 'sponsorship:institution_courses' institution_slug=institution.slug %}" class="sp-btn-outline-primary btn-sm">
+      <i class="fa fa-book" aria-hidden="true"></i> View Courses
     </a>
-    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="btn btn-outline-secondary btn-sm">
-      Manage Teachers
+    <a href="{% url 'sponsorship:teacher_list' institution_slug=institution.slug %}" class="sp-btn-outline-primary">
+      <i class="fa fa-users" aria-hidden="true"></i> Manage Teachers
     </a>
   </div>
   {% endif %}
@@ -49,9 +45,9 @@
         <th>Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="sp-student-tbody">
       {% for s in sponsorships %}
-      <tr>
+      <tr data-status="{{ s.status }}">
         <td>{{ s.invited_email }}</td>
         <td>
           {% if s.student %}
@@ -64,15 +60,21 @@
         <td>{{ s.sponsor_start }}</td>
         <td>{{ s.grace_end|default:"—" }}</td>
         <td>
-          <div class="d-flex flex-wrap" style="gap: 0.35rem;">
+          <div class="d-flex align-items-center" style="gap: 0.3rem;">
             <a href="{% url 'sponsorship:student_detail' institution_slug=institution.slug pk=s.pk %}"
-               class="btn btn-sm btn-outline-secondary">View</a>
+               class="sp-icon-btn sp-icon-btn--view" title="View student">
+              <i class="fa fa-eye" aria-hidden="true" style="color: #28a745;"></i>
+            </a>
             {% if not manager or manager.is_admin %}
               {% if s.status in 'active,pending' %}
                 <a href="{% url 'sponsorship:student_edit' institution_slug=institution.slug pk=s.pk %}"
-                   class="btn btn-sm btn-outline-secondary">Edit</a>
+                   class="sp-icon-btn sp-icon-btn--edit" title="Edit student">
+                  <i class="fa fa-pencil" aria-hidden="true" style="color: #d4880a;"></i>
+                </a>
                 <a href="{% url 'sponsorship:student_remove' institution_slug=institution.slug pk=s.pk %}"
-                   class="btn btn-sm btn-outline-danger">Remove</a>
+                   class="sp-icon-btn sp-icon-btn--danger" title="Remove student">
+                  <i class="fa fa-trash" aria-hidden="true" style="color: #dc3545;"></i>
+                </a>
               {% endif %}
             {% endif %}
           </div>
@@ -82,7 +84,129 @@
     </tbody>
   </table>
 </div>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mt-2" style="gap: 0.5rem;">
+  <div class="d-flex align-items-center" style="gap: 0.5rem;">
+    <span class="sp-filter-label">Per page:</span>
+    <select id="sp-page-size" class="form-control form-control-sm" style="width: auto;">
+      <option value="10">10</option>
+      <option value="25" selected>25</option>
+      <option value="50">50</option>
+    </select>
+    <span id="sp-count-label" class="text-muted" style="font-size: 0.85rem;"></span>
+  </div>
+  <nav id="sp-pagination" aria-label="Student pagination"></nav>
+</div>
+
 {% else %}
   <p class="text-muted mt-3">No students found.</p>
+{% endif %}
+
+{% if sponsorships %}
+<script>
+(function () {
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#sp-student-tbody tr'));
+  var filterBtns = Array.prototype.slice.call(document.querySelectorAll('#sp-filter-group .sp-filter-item'));
+  var pageSizeSelect = document.getElementById('sp-page-size');
+  var paginationEl = document.getElementById('sp-pagination');
+  var countLabel = document.getElementById('sp-count-label');
+
+  var currentFilter = '';
+  var pageSize = 25;
+  var currentPage = 1;
+
+  function getFiltered() {
+    if (!currentFilter) return rows;
+    return rows.filter(function (r) { return r.dataset.status === currentFilter; });
+  }
+
+  function render() {
+    var filtered = getFiltered();
+    var total = filtered.length;
+    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    rows.forEach(function (r) { r.style.display = 'none'; });
+    var start = (currentPage - 1) * pageSize;
+    filtered.slice(start, start + pageSize).forEach(function (r) { r.style.display = ''; });
+
+    var end = Math.min(start + pageSize, total);
+    countLabel.textContent = total === 0 ? 'No students' : 'Showing ' + (start + 1) + '–' + end + ' of ' + total;
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      return;
+    }
+
+    var pages = [];
+    var half = 2;
+    var start = Math.max(1, currentPage - half);
+    var end = Math.min(totalPages, currentPage + half);
+    if (start > 1) { pages.push(1); if (start > 2) pages.push('…'); }
+    for (var i = start; i <= end; i++) pages.push(i);
+    if (end < totalPages) { if (end < totalPages - 1) pages.push('…'); pages.push(totalPages); }
+
+    var ul = document.createElement('ul');
+    ul.className = 'pagination pagination-sm mb-0';
+
+    function pageItem(label, page, disabled, active) {
+      var li = document.createElement('li');
+      li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
+      var a = document.createElement('a');
+      a.className = 'page-link';
+      a.href = '#';
+      a.innerHTML = label;
+      if (!disabled) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          currentPage = page;
+          render();
+        });
+      }
+      li.appendChild(a);
+      return li;
+    }
+
+    ul.appendChild(pageItem('&laquo;', currentPage - 1, currentPage === 1, false));
+    pages.forEach(function (p) {
+      if (p === '…') {
+        var li = document.createElement('li');
+        li.className = 'page-item disabled';
+        li.innerHTML = '<span class="page-link">…</span>';
+        ul.appendChild(li);
+      } else {
+        ul.appendChild(pageItem(p, p, false, p === currentPage));
+      }
+    });
+    ul.appendChild(pageItem('&raquo;', currentPage + 1, currentPage === totalPages, false));
+
+    paginationEl.innerHTML = '';
+    paginationEl.appendChild(ul);
+  }
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      filterBtns.forEach(function (b) { b.classList.remove('sp-filter-item--active'); });
+      btn.classList.add('sp-filter-item--active');
+      currentFilter = btn.dataset.filter || '';
+      currentPage = 1;
+      render();
+    });
+  });
+
+  pageSizeSelect.addEventListener('change', function () {
+    pageSize = parseInt(this.value, 10);
+    currentPage = 1;
+    render();
+  });
+
+  render();
+})();
+</script>
 {% endif %}
 {% endblock %}
