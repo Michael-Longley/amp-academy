@@ -51,17 +51,6 @@ jobs:
 
           echo "All required secrets are present."
 
-      # The MFE webpack build peaks at 7GB+ RAM.
-      # Standard GitHub runners have 7GB — add swap so the build does not OOM.
-      - name: Add swap space
-        run: |
-          sudo fallocate -l 6G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          echo "Memory after adding swap:"
-          free -h
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:

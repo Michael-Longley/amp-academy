@@ -74,7 +74,8 @@ hooks.Filters.ENV_PATCHES.add_item((
     "'git+https://github.com/michael-longley/amp-academy.git"
     "#subdirectory=tutor-contrib-pwa' "
     "pywebpush>=2.0.0 "
-    "py-vapid>=1.9.0",
+    "py-vapid>=1.9.0 "
+    "'cryptography<42'",
 ))
 
 # ── 5. LMS Django settings ────────────────────────────────────────────────────
