@@ -1,0 +1,111 @@
+name: Build & Push MFE Image
+
+# Triggers on any push to main that touches the PWA plugin or this workflow.
+# Can also be triggered manually from the Actions tab.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tutor-contrib-pwa/**"
+      - ".github/workflows/mfe-publish.yml"
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: michael-longley/amp-academy-mfe
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Validate all required secrets are present before doing any work.
+      # If any are missing, lists them all and fails immediately with a clear message.
+      - name: Validate required secrets
+        run: |
+          MISSING=()
+          [ -z "${{ secrets.LMS_HOST }}"               ] && MISSING+=("LMS_HOST")
+          [ -z "${{ secrets.PWA_VAPID_PUBLIC_KEY }}"   ] && MISSING+=("PWA_VAPID_PUBLIC_KEY")
+          [ -z "${{ secrets.PWA_VAPID_PRIVATE_KEY }}"  ] && MISSING+=("PWA_VAPID_PRIVATE_KEY")
+          [ -z "${{ secrets.PWA_ICON_URL }}"           ] && MISSING+=("PWA_ICON_URL")
+          [ -z "${{ secrets.PWA_SHORT_NAME }}"         ] && MISSING+=("PWA_SHORT_NAME")
+          [ -z "${{ secrets.PWA_THEME_COLOR }}"        ] && MISSING+=("PWA_THEME_COLOR")
+          [ -z "${{ secrets.PWA_VAPID_CONTACT_EMAIL }}" ] && MISSING+=("PWA_VAPID_CONTACT_EMAIL")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::The following required secrets are not set:"
+            for s in "${MISSING[@]}"; do
+              echo "::error::  - $s"
+            done
+            echo ""
+            echo "Add these in: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+
+          echo "All required secrets are present."
+
+      # The MFE webpack build peaks at 7GB+ RAM.
+      # Standard GitHub runners have 7GB — add swap so the build does not OOM.
+      - name: Add swap space
+        run: |
+          sudo fallocate -l 6G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "Memory after adding swap:"
+          free -h
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Tutor and plugins
+        run: |
+          pip install "tutor==21.0.2" "tutor-mfe==21.0.0"
+          pip install "./tutor-contrib-pwa"
+
+      - name: Configure Tutor
+        run: |
+          tutor plugins enable mfe pwa
+          tutor config save \
+            --set LMS_HOST="${{ secrets.LMS_HOST }}" \
+            --set ENABLE_HTTPS=true \
+            --set PWA_VAPID_PUBLIC_KEY="${{ secrets.PWA_VAPID_PUBLIC_KEY }}" \
+            --set PWA_VAPID_PRIVATE_KEY="${{ secrets.PWA_VAPID_PRIVATE_KEY }}" \
+            --set PWA_ICON_URL="${{ secrets.PWA_ICON_URL }}" \
+            --set PWA_SHORT_NAME="${{ secrets.PWA_SHORT_NAME }}" \
+            --set PWA_THEME_COLOR="${{ secrets.PWA_THEME_COLOR }}" \
+            --set PWA_VAPID_CONTACT_EMAIL="${{ secrets.PWA_VAPID_CONTACT_EMAIL }}"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build MFE image
+        run: tutor images build mfe
+
+      - name: Push to GHCR
+        run: |
+          docker tag overhangio/openedx-mfe:21.0.0 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Print deploy instructions
+        run: |
+          echo ""
+          echo "Image pushed: ghcr.io/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "On the production server, run:"
+          echo "  docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest"
+          echo "  docker tag ghcr.io/${{ env.IMAGE_NAME }}:latest overhangio/openedx-mfe:21.0.0"
+          echo "  tutor local stop mfe && tutor local start --detach mfe"
