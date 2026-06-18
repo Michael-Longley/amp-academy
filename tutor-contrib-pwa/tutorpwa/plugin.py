@@ -38,7 +38,7 @@ hooks.Filters.CONFIG_DEFAULTS.add_items([
     ("PWA_APP_NAME", ""),
     ("PWA_SHORT_NAME", ""),
     # PWA behaviour
-    ("PWA_START_URL", "/"),
+    ("PWA_START_URL", "/learner-dashboard/"),
     ("PWA_SCOPE", "/"),
     ("PWA_BACKGROUND_COLOR", "#ffffff"),
     # Operator overrides
