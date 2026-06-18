@@ -4,7 +4,7 @@ const APP_SHELL_CACHE = "pwa-shell-v" + CACHE_VERSION;
 const CONTENT_CACHE  = "pwa-content-v" + CACHE_VERSION;
 
 const APP_SHELL_URLS = [
-  "/",
+  "{{ PWA_START_URL }}",
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
